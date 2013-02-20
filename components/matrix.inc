@@ -178,9 +178,7 @@ function webform_matrix_get_column_form($form,$form_state,$component){
         
        
     }
-    $form['#validate'][]='_webform_edit_validate_matrix';
-    //$form['#submit'][] = 'webform_wrapper_matrix_extra_property';
-    //$form['#submit'][]='webform_component_edit_form_submit';
+    
     return $form;
 }
 

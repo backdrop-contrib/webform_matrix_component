@@ -45,10 +45,12 @@ function webform_matrix_component_webform_component_info() {
 function webform_matrix_component_form_webform_component_edit_form_alter(&$form, &$form_state, $formid) {
     
     if ($form['type']['#value'] == 'matrix') {
+	
         $component=$form_state['build_info']['args'][1];
         $matrix_form=webform_matrix_get_column_form($form,$form_state,$component);
-		$form=array_merge($form,$matrix_form);
-		$form['#attached']['js'][]=drupal_get_path('module','webform_matrix_component').'/webform_matrix_component.js';
+	$form=array_merge($form,$matrix_form);
+	$form['#validate'][]='_webform_edit_validate_matrix';
+	$form['#attached']['js'][]=drupal_get_path('module','webform_matrix_component').'/webform_matrix_component.js';
     }
 }
 
