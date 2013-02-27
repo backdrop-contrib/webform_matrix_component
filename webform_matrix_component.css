@@ -1,6 +1,7 @@
-.matrix-render-div{width:100%;}
+.matrix-render-div,.matrix-render-row-div{width:100%;clear:both;float: left;}
 .matrix-render-row-div .matrix-row-column-element{float:left;}
 .matrix-row-column-element .form-text{width:90%;}
 .matrix-row-column-element select{width:90%;}
-.matrix-row-column-element .date_matrix select{width:33%}
+.matrix-row-column-element .form-type-date select{width:30% !important;} 
 .matrix-render-row-div {clear:both;float:left;}
+

@@ -652,7 +652,7 @@ function webform_matrix_array($value) {
 function matrix_select_option_from_text($options){
 	if($options!=''){
 		foreach (preg_split("/((\r?\n)|(\r\n?))/", $options) as $line) {
-			if(strstr('|',$line)){
+			if(strstr($line,'|')){
 				list($key, $value) = explode('|', $line);
 			}else{
 				$key=$value=$line;
