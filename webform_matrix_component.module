@@ -32,8 +32,8 @@ function webform_matrix_component_webform_component_info() {
             // If this component allows other components to be grouped within it 
             // (like a fieldset or tabs). Defaults to FALSE.
             'group' => TRUE,
-			// Add content to CSV downloads. Defaults to TRUE.
-			'csv' => TRUE,
+            // Add content to CSV downloads. Defaults to TRUE.
+            'csv' => TRUE,
         ),
         'file' => 'components/matrix.inc',
         'file path' => drupal_get_path('module', 'webform_matrix_component'),
@@ -45,14 +45,13 @@ function webform_matrix_component_webform_component_info() {
 /**
  * Implements hook_form_formid_alter()
  * Alter the webform_component_edit_form
- **/
-
+ * */
 function webform_matrix_component_form_webform_component_edit_form_alter(&$form, &$form_state, $formid) {
-    
+
     if ($form['type']['#value'] == 'matrix') {
-        $component=$form_state['build_info']['args'][1];
-        $matrix_form=webform_matrix_get_column_form($form,$form_state,$component);
-		$form=array_merge($form,$matrix_form);
+        $component = $form_state['build_info']['args'][1];
+        $matrix_form = webform_matrix_get_column_form($form, $form_state, $component);
+        $form = array_merge($form, $matrix_form);
     }
 }
 
@@ -61,47 +60,45 @@ function webform_matrix_component_form_webform_component_edit_form_alter(&$form,
  * Admin settings for webform_matrix_component
  * Can define rows/cols for matrix components
  * Default rows-10,cols-10 
- **/
-function webform_matrix_component_form_webform_admin_settings_alter(&$form,&$form_state,$formid){
-	
-	module_load_include('inc', 'webform', 'components/number');
-	$form['matrix_fieldset']=array(
-		'#type'=>'fieldset',
-		'#title'=>t('Matrix Component Settings'),
-		'#collapsible' => 1,
+ * */
+function webform_matrix_component_form_webform_admin_settings_alter(&$form, &$form_state, $formid) {
+
+    module_load_include('inc', 'webform', 'components/number');
+    $form['matrix_fieldset'] = array(
+        '#type' => 'fieldset',
+        '#title' => t('Matrix Component Settings'),
+        '#collapsible' => 1,
         '#collapsed' => 1,
-	);
-	$form['matrix_fieldset']['webform_matrix_rows']=array(
-		'#type'=>'textfield',
-		'#title'=>t('Matrix Rows'),
-		'#description'=>t('Enter the max rows in matrix component'),
-		'#default_value'=>variable_get('webform_matrix_rows',10),
-		'#element_validate' => array('_webform_validate_number'),
-		'#integer'=>TRUE,
-		'#min'=>1,
-		'#max'=>100,
-		'#step'=>1
-	);
-	$form['matrix_fieldset']['webform_matrix_cols']=array(
-		'#type'=>'textfield',
-		'#title'=>t('Matrix Cols'),
-		'#description'=>t('Enter the max cols in matrix component'),
-		'#default_value'=>variable_get('webform_matrix_cols',10),
-		'#element_validate' => array('_webform_validate_number'),
-		'#integer'=>TRUE,
-		'#min'=>1,
-		'#max'=>100,
-		'#step'=>1
-	);
-	$form['matrix_fieldset']['textfield_validation']=array(
-		'#type'=>'textarea',
-		'#title'=>t('Textfield Validation'),
-		'#description'=>t('You can extend textfield validation.Seperate By new line.
+    );
+    $form['matrix_fieldset']['webform_matrix_rows'] = array(
+        '#type' => 'textfield',
+        '#title' => t('Matrix Rows'),
+        '#description' => t('Enter the max rows in matrix component'),
+        '#default_value' => variable_get('webform_matrix_rows', 10),
+        '#element_validate' => array('_webform_validate_number'),
+        '#integer' => TRUE,
+        '#min' => 1,
+        '#max' => 100,
+        '#step' => 1
+    );
+    $form['matrix_fieldset']['webform_matrix_cols'] = array(
+        '#type' => 'textfield',
+        '#title' => t('Matrix Cols'),
+        '#description' => t('Enter the max cols in matrix component'),
+        '#default_value' => variable_get('webform_matrix_cols', 10),
+        '#element_validate' => array('_webform_validate_number'),
+        '#integer' => TRUE,
+        '#min' => 1,
+        '#max' => 100,
+        '#step' => 1
+    );
+    $form['matrix_fieldset']['textfield_validation'] = array(
+        '#type' => 'textarea',
+        '#title' => t('Textfield Validation'),
+        '#description' => t('You can extend textfield validation.Seperate By new line.
 							create new function webform_render_matrix_textfield_% in your module file. pass element & form_state as arguments. Otherwise you will get error call to undefines function.'),
-		'#default_value'=>variable_get('textfield_validation','Numeric'),
-	);
-
+        '#default_value' => variable_get('textfield_validation', 'Numeric'),
+    );
 }
-
 
 ?>
