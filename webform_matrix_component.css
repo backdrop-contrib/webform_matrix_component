@@ -1,1 +1,6 @@
 .matrix-render-div{width:100%;}
+.matrix-render-row-div .matrix-row-column-element{float:left;}
+.matrix-row-column-element .form-text{width:90%;}
+.matrix-row-column-element select{width:90%;}
+.matrix-row-column-element .date_matrix select{width:33%}
+.matrix-render-row-div {clear:both;float:left;}

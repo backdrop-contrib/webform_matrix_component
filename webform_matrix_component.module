@@ -1,11 +1,13 @@
 <?php
 
+module_load_include('inc', 'webform_matrix_component', '/components/matrix');
+module_load_include('inc', 'webform', '/includes/webform.components');
+
 /**
  * Define components to Webform.
  * @see webform.api.php
  * @see webform_components()
  */
-
 function webform_matrix_component_webform_component_info() {
     $components = array();
 
@@ -20,9 +22,9 @@ function webform_matrix_component_webform_component_info() {
             // This component supports a title attribute. Defaults to TRUE.
             'title' => TRUE,
             // This component has a title that can be toggled as displayed or not.
-            'title_display' => TRUE,
+            'title_display' => FALSE,
             // This component has a title that can be displayed inline.
-            'title_inline' => TRUE,
+            'title_inline' => FALSE,
             // If this component can be used as a conditional SOURCE. All components
             // may always be displayed conditionally, regardless of this setting.
             // Defaults to TRUE.
@@ -30,8 +32,8 @@ function webform_matrix_component_webform_component_info() {
             // If this component allows other components to be grouped within it 
             // (like a fieldset or tabs). Defaults to FALSE.
             'group' => TRUE,
-				// Add content to CSV downloads. Defaults to TRUE.
-	      'csv' => TRUE,
+			// Add content to CSV downloads. Defaults to TRUE.
+			'csv' => TRUE,
         ),
         'file' => 'components/matrix.inc',
         'file path' => drupal_get_path('module', 'webform_matrix_component'),
@@ -40,21 +42,28 @@ function webform_matrix_component_webform_component_info() {
     return $components;
 }
 
-
+/**
+ * Implements hook_form_formid_alter()
+ * Alter the webform_component_edit_form
+ **/
 
 function webform_matrix_component_form_webform_component_edit_form_alter(&$form, &$form_state, $formid) {
     
     if ($form['type']['#value'] == 'matrix') {
-	
         $component=$form_state['build_info']['args'][1];
         $matrix_form=webform_matrix_get_column_form($form,$form_state,$component);
-	$form=array_merge($form,$matrix_form);
-	$form['#validate'][]='_webform_edit_validate_matrix';
-	$form['#attached']['js'][]=drupal_get_path('module','webform_matrix_component').'/webform_matrix_component.js';
+		$form=array_merge($form,$matrix_form);
     }
 }
 
+/**
+ * Implements hook_form_formid_alter()
+ * Admin settings for webform_matrix_component
+ * Can define rows/cols for matrix components
+ * Default rows-10,cols-10 
+ **/
 function webform_matrix_component_form_webform_admin_settings_alter(&$form,&$form_state,$formid){
+	
 	module_load_include('inc', 'webform', 'components/number');
 	$form['matrix_fieldset']=array(
 		'#type'=>'fieldset',
@@ -83,6 +92,13 @@ function webform_matrix_component_form_webform_admin_settings_alter(&$form,&$for
 		'#min'=>1,
 		'#max'=>100,
 		'#step'=>1
+	);
+	$form['matrix_fieldset']['textfield_validation']=array(
+		'#type'=>'textarea',
+		'#title'=>t('Textfield Validation'),
+		'#description'=>t('You can extend textfield validation.Seperate By new line.
+							create new function webform_render_matrix_textfield_% in your module file. pass element & form_state as arguments. Otherwise you will get error call to undefines function.'),
+		'#default_value'=>variable_get('textfield_validation','Numeric'),
 	);
 
 }
