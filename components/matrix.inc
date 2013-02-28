@@ -671,7 +671,7 @@ function _webform_csv_data_matrix($component, $export_options, $value) {
 
 		$csv_array=array();
 		foreach($reverse_array as $value){
-			$csv_array[]=implode(" ".$export_options['delimiter']." ",$value);
+			$csv_array[]=implode(" - ",$value);
 		}
 		return $csv_array;
     } else {
@@ -708,19 +708,10 @@ function matrix_select_option_from_text($options) {
  * This is simple function to convert array rows to cols
  */
 function matrix_array_reverse($array) {
-    $rows = count($array);
-    $cols = count($array[0]);
-    $ridx = 0;
-    $cidx = 0;
     $out = array();
-    foreach ($array as $row) {
-        foreach ($row as $val) {
-            $out[$ridx][$cidx] = $val;
-            $ridx++;
-            if ($ridx >= $rows) {
-                $cidx++;
-                $ridx = 0;
-            }
+    foreach ($array as  $rowkey => $row) {
+        foreach($row as $colkey => $col){
+            $out[$colkey][$rowkey]=$col;
         }
     }
     return $out;
