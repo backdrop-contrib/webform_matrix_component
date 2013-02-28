@@ -515,6 +515,8 @@ function _webform_display_matrix($component, $value, $format = 'html') {
 					$timestamp = webform_strtotime($value_array[$key][$col]['month'] . '/' . $value_array[$key][$col]['day'] . '/' . $value_array[$key][$col]['year']);
 					$format = webform_date_format('medium');
 					$value_array[$key][$col]=format_date($timestamp, 'custom', $format, 'UTC');
+				}else{
+					$value_array[$key][$col]="";
 				}
 			}
 		}
@@ -604,6 +606,8 @@ function _webform_table_matrix($component, $value) {
 						$timestamp = webform_strtotime($value_array[$key][$col]['month'] . '/' . $value_array[$key][$col]['day'] . '/' . $value_array[$key][$col]['year']);
 						$format = webform_date_format('short');
 						$value_array[$key][$col]=format_date($timestamp, 'custom', $format, 'UTC');
+					}else{
+						$value_array[$key][$col]="";
 					}
 				}
 			}
@@ -654,6 +658,8 @@ function _webform_csv_data_matrix($component, $export_options, $value) {
 						$timestamp = webform_strtotime($value_array[$key][$col]['month'] . '/' . $value_array[$key][$col]['day'] . '/' . $value_array[$key][$col]['year']);
 						$format = webform_date_format('short');
 						$value_array[$key][$col]=format_date($timestamp, 'custom', $format, 'UTC');
+					}else{
+						$value_array[$key][$col]="";
 					}
 				}
 			}
