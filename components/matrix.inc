@@ -119,7 +119,7 @@ function webform_matrix_get_column_form($form, $form_state, $component) {
     for ($i = 1; $i <= $matrix_col; $i++) {
         $element_type = 'textfield';
         $element_id = $element_title = 'element-' . $i;
-        $option_array = $label_name = $helptext = "";
+        $option_array = $label_name =  "";
         $element_mandatory = $is_datepicker = 0;
         if (isset($input_component['element'][$element_id])) {
             $elementvalue = $input_component['element'][$element_id];
@@ -127,7 +127,7 @@ function webform_matrix_get_column_form($form, $form_state, $component) {
             $element_title = @$elementvalue['title'];
             $element_mandatory = @$elementvalue['mandatory'];
             $is_datepicker = @$elementvalue['datepicker'];
-            $helptext = @$elementvalue['helptext'];
+
         }
 
         $td = "<td id='$element_id'>";
@@ -167,14 +167,6 @@ function webform_matrix_get_column_form($form, $form_state, $component) {
             '#default_value' => $element_mandatory,
             '#parents' => array('extra', 'element', $element_id, 'mandatory'),
             '#return_value' => 1,
-        );
-
-        $form['extra']['element'][$element_id]['helptext'] = array(
-            '#type' => 'textfield',
-            '#title' => 'Help Text',
-            '#size' => 15,
-            '#default_value' => $helptext,
-            '#parents' => array('extra', 'element', $element_id, 'helptext'),
         );
 
         switch ($element_type) {
@@ -261,6 +253,7 @@ function webform_matrix_get_column_form($form, $form_state, $component) {
                 );
                 break;
         }
+	drupal_alter('webform_edit_matrix', $form['extra']['element'][$element_id],$elementvalue,$element_id);
     }
 
     return $form;
@@ -313,7 +306,7 @@ function _webform_render_matrix($component, $value = NULL, $filter = TRUE) {
                     $eletype = $elevalue['type'];
                     $title = isset($elevalue['title']) ? $elevalue['title'] : $elekey;
                     $title_display = ($prow == 1) ? 'before' : "invisible";
-                    $helptext = isset($elevalue['helptext']) ? $elevalue['helptext'] : '';
+                    
                     //Only first row is manadatory
                     $required=FALSE;
                     if ($prow == 1) {
@@ -342,16 +335,7 @@ function _webform_render_matrix($component, $value = NULL, $filter = TRUE) {
                             if (isset($elevalue['validate']) && $elevalue['validate'] != 'None') {
                                 $element[$prow][$i]['#element_validate'] = array('webform_render_matrix_textfield_' . $elevalue['validate']);
                             }
-                            if (!empty($helptext)) {
-                                $element[$prow][$i]['#field_suffix'] = $helptext;
-                            }
-                            
-                            if($formkey=='vehicle_detail_matrix' && $title=='Sum insured (US$)'){
-                                $parent_formkey=db_query("SELECT form_key FROM {webform_component} WHERE cid=:pid",array(':pid'=>$pid))->fetchField();
-                                $element[$prow][$i]['#states']=array(
-                                    'invisible' => array("select[name='submitted[$parent_formkey][$formkey][1][5]']" => array('value' => 'TPO')),
-                                );
-                            }
+                           
                             break;
 
                         case 'select':
@@ -431,6 +415,7 @@ function _webform_render_matrix($component, $value = NULL, $filter = TRUE) {
                             );
                             break;
                     }
+                    drupal_alter('webform_render_matrix', $component,$elevalue,$element[$prow][$i]);
                 }
             }
         }
