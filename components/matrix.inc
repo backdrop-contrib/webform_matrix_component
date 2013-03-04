@@ -119,7 +119,7 @@ function webform_matrix_get_column_form($form, $form_state, $component) {
     for ($i = 1; $i <= $matrix_col; $i++) {
         $element_type = 'textfield';
         $element_id = $element_title = 'element-' . $i;
-        $option_array = $label_name = "";
+        $option_array = $label_name = $helptext = "";
         $element_mandatory = $is_datepicker = 0;
         if (isset($input_component['element'][$element_id])) {
             $elementvalue = $input_component['element'][$element_id];
@@ -127,6 +127,7 @@ function webform_matrix_get_column_form($form, $form_state, $component) {
             $element_title = @$elementvalue['title'];
             $element_mandatory = @$elementvalue['mandatory'];
             $is_datepicker = @$elementvalue['datepicker'];
+            $helptext = @$elementvalue['helptext'];
         }
 
         $td = "<td id='$element_id'>";
@@ -166,6 +167,14 @@ function webform_matrix_get_column_form($form, $form_state, $component) {
             '#default_value' => $element_mandatory,
             '#parents' => array('extra', 'element', $element_id, 'mandatory'),
             '#return_value' => 1,
+        );
+
+        $form['extra']['element'][$element_id]['helptext'] = array(
+            '#type' => 'textfield',
+            '#title' => 'Help Text',
+            '#size' => 15,
+            '#default_value' => $helptext,
+            '#parents' => array('extra', 'element', $element_id, 'helptext'),
         );
 
         switch ($element_type) {
@@ -226,25 +235,27 @@ function webform_matrix_get_column_form($form, $form_state, $component) {
                 $form['extra']['element'][$element_id]['startdate'] = array(
                     '#type' => 'textfield',
                     '#title' => 'Start Date',
-                    '#default_value' => $start_date,
+                    '#default_value' => !empty($start_date) ? $start_date : "-2 years",
                     '#size' => 15,
                     '#parents' => array('extra', 'element', $element_id, 'startdate'),
+                    '#description' => t('The earliest date that may be entered into the field.') . '<br/>' . t('Accepts any date in any <a href="http://www.gnu.org/software/tar/manual/html_chapter/Date-input-formats.html">GNU Date Input Format</a>.'),
                 );
 
                 $end_date = @$elementvalue['enddate'];
                 $form['extra']['element'][$element_id]['enddate'] = array(
                     '#type' => 'textfield',
                     '#title' => 'End Date',
-                    '#default_value' => $end_date,
+                    '#default_value' => !empty($end_date) ? $end_date : "+2 years",
                     '#size' => 15,
                     '#parents' => array('extra', 'element', $element_id, 'enddate'),
+                    '#description' => t('The latest date that may be entered into the field.') . '<br/>' . t('Accepts any date in any <a href="http://www.gnu.org/software/tar/manual/html_chapter/Date-input-formats.html">GNU Date Input Format</a>.'),
                 );
 
                 $default_date = @$elementvalue['default_date'];
                 $form['extra']['element'][$element_id]['default_date'] = array(
                     '#type' => 'textfield',
                     '#title' => 'Default Date',
-                    '#default_value' => $default_date,
+                    '#default_value' => !empty($default_date) ? $default_date : '',
                     '#size' => 15,
                     '#parents' => array('extra', 'element', $element_id, 'default_date'),
                 );
@@ -269,11 +280,12 @@ function _matrix_get_type_option(&$form, &$form_state) {
 function _webform_render_matrix($component, $value = NULL, $filter = TRUE) {
 
     module_load_include('inc', 'webform', '/components/date');
-
     $nid = $component['nid'];
     $cid = $component['cid'];
+    $formkey = $component['form_key'];
+    $pid = $component['pid'];
     $element = array();
-
+    $element['#webform_component'] = $component;
     $element['#attached']['css'][] = drupal_get_path('module', 'webform_matrix_component') . '/webform_matrix_component.css';
     $element['#attached']['js'][] = drupal_get_path('module', 'webform_matrix_component') . '/webform_matrix_component.js';
     $element['value'] = array(
@@ -295,14 +307,15 @@ function _webform_render_matrix($component, $value = NULL, $filter = TRUE) {
                     list($j, $i) = explode('-', $elekey);
 
                     $width = 100 / $matrix_col;
-                    $width = $width - .1;
+                    $width = $width - .001;
                     $prefix = "<div style='width:$width% !important;' class='matrix-row-column-element'>";
                     $suffix = "</div>";
                     $eletype = $elevalue['type'];
                     $title = isset($elevalue['title']) ? $elevalue['title'] : $elekey;
                     $title_display = ($prow == 1) ? 'before' : "invisible";
-
+                    $helptext = isset($elevalue['helptext']) ? $elevalue['helptext'] : '';
                     //Only first row is manadatory
+                    $required=FALSE;
                     if ($prow == 1) {
                         //If component is mandatory 
                         $required = $component['mandatory'] ? TRUE : FALSE;
@@ -329,6 +342,16 @@ function _webform_render_matrix($component, $value = NULL, $filter = TRUE) {
                             if (isset($elevalue['validate']) && $elevalue['validate'] != 'None') {
                                 $element[$prow][$i]['#element_validate'] = array('webform_render_matrix_textfield_' . $elevalue['validate']);
                             }
+                            if (!empty($helptext)) {
+                                $element[$prow][$i]['#field_suffix'] = $helptext;
+                            }
+                            
+                            if($formkey=='vehicle_detail_matrix' && $title=='Sum insured (US$)'){
+                                $parent_formkey=db_query("SELECT form_key FROM {webform_component} WHERE cid=:pid",array(':pid'=>$pid))->fetchField();
+                                $element[$prow][$i]['#states']=array(
+                                    'invisible' => array("select[name='submitted[$parent_formkey][$formkey][1][5]']" => array('value' => 'TPO')),
+                                );
+                            }
                             break;
 
                         case 'select':
@@ -345,6 +368,8 @@ function _webform_render_matrix($component, $value = NULL, $filter = TRUE) {
                                 '#default_value' => $editvalue[$prow][$i],
                                 '#required' => $required,
                                 '#title_display' => $title_display,
+                                '#empty_option' => 'Select',
+                                '#empty_value' => '_none',
                             );
                             break;
 
@@ -355,8 +380,8 @@ function _webform_render_matrix($component, $value = NULL, $filter = TRUE) {
                                 '#required' => $required,
                                 '#timezone' => 'user',
                                 '#title_display' => $title_display,
-				'#start_date'=>$elevalue['datepicker']?webform_strtodate('Y-m-d',$elevalue['startdate'],'user'):$elevalue['startdate'],
-                                '#end_date'=>$elevalue['datepicker']?webform_strtodate('Y-m-d',$elevalue['enddate'],'user'):$elevalue['enddate'],
+                                '#start_date' => $elevalue['datepicker'] ? webform_strtodate('Y-m-d', $elevalue['startdate'], 'user') : $elevalue['startdate'],
+                                '#end_date' => $elevalue['datepicker'] ? webform_strtodate('Y-m-d', $elevalue['enddate'], 'user') : $elevalue['enddate'],
                             );
 
                             if ($elevalue['datepicker']) {
@@ -386,7 +411,7 @@ function _webform_render_matrix($component, $value = NULL, $filter = TRUE) {
                                 $element[$prow][$i]['#default_value'] = !empty($editvalue[$prow][$i]) ? $editvalue[$prow][$i] : $elevalue['default_date'];
                                 $element[$prow][$i]['#process'] = array('webform_expand_date');
                                 $element[$prow][$i]['#year_textfield'] = 0;
-				$element[$prow][$i]['#element_validate']=array('webform_edit_matrix_date');
+                                $element[$prow][$i]['#element_validate'] = array('webform_edit_matrix_date');
                             }
 
 
@@ -416,12 +441,25 @@ function _webform_render_matrix($component, $value = NULL, $filter = TRUE) {
     }
 
     $element['#theme'][] = 'webform_matrix';
+
+    $element_validate_array=array();
+    foreach (module_implements('webform_matrix_validate') as $module) {
+        $element_validate_array[] = $module.'_webform_matrix_validate';
+    }
+    if(!empty($element_validate_array)){
+        $element['#element_validate'] = $element_validate_array;
+    }
+    
     return $element;
 }
 
 function theme_webform_matrix($variables) {
     $element = $variables['element'];
-    $output = "<div class='matrix-render-div'>";
+    $component = $element['#webform_component'];
+    $form_key = $component['form_key'];
+    $pid = $component['pid'];
+    $id = "edit-$form_key-$pid";
+    $output = "<div class='matrix-render-div' id='$id'>";
     $output .= drupal_render_children($element);
     $output .="</div>";
     return $output;
@@ -484,46 +522,46 @@ function webform_edit_matrix_select($element, &$form_state) {
 }
 
 function webform_edit_matrix_date($element, $form_state) {
-	// Check if the user filled the required fields.
-  foreach (array('day', 'month', 'year') as $field_type) {
-    if (!is_numeric($element[$field_type]['#value']) && $element['#required']) {
-      form_error($element, t('!name field is required.', array('!name' => $element['#title'])));
-      return;
+    // Check if the user filled the required fields.
+    foreach (array('day', 'month', 'year') as $field_type) {
+        if (!is_numeric($element[$field_type]['#value']) && $element['#required']) {
+            form_error($element, t('!name field is required.', array('!name' => $element['#title'])));
+            return;
+        }
     }
-  }
 }
 
 /**
  * Implements _webform_display_component().
  */
 function _webform_display_matrix($component, $value, $format = 'html') {
-    
-    $headers=array();
+
+    $headers = array();
     $value_array = isset($value[0]) ? unserialize($value[0]) : '';
-    $sub_elements=$component['extra']['element'];
-    $col=1;
-	foreach($sub_elements as $sub_element){
-		$headers[]=$sub_element['title'];
-		if($sub_element['type']=='select'){
-			$option_array=matrix_select_option_from_text($sub_element['option']);
-			foreach($value_array as $key=> $value_row){
-				$value_array[$key][$col]=array_key_exists($value_row[$col],$option_array)?$option_array[$value_row[$col]]:$value_row[$col];
-			}
-		}else if($sub_element['type']=='date' && !$sub_element['datepicker']){
-			foreach($value_array as $key=> $value_row){
-				if ($value_array[$key][$col]['year'] && $value_array[$key][$col]['month'] && $value_array[$key][$col]['day']) {
-					$timestamp = webform_strtotime($value_array[$key][$col]['month'] . '/' . $value_array[$key][$col]['day'] . '/' . $value_array[$key][$col]['year']);
-					$format = webform_date_format('medium');
-					$value_array[$key][$col]=format_date($timestamp, 'custom', $format, 'UTC');
-				}else{
-					$value_array[$key][$col]="";
-				}
-			}
-		}
-		$col++;
-	}
-	$matrix_value=array('headers'=>$headers,'rows'=>$value_array);
-	
+    $sub_elements = $component['extra']['element'];
+    $col = 1;
+    foreach ($sub_elements as $sub_element) {
+        $headers[] = $sub_element['title'];
+        if ($sub_element['type'] == 'select') {
+            $option_array = matrix_select_option_from_text($sub_element['option']);
+            foreach ($value_array as $key => $value_row) {
+                $value_array[$key][$col] = array_key_exists($value_row[$col], $option_array) ? $option_array[$value_row[$col]] : $value_row[$col];
+            }
+        } else if ($sub_element['type'] == 'date' && !$sub_element['datepicker']) {
+            foreach ($value_array as $key => $value_row) {
+                if ($value_array[$key][$col]['year'] && $value_array[$key][$col]['month'] && $value_array[$key][$col]['day']) {
+                    $timestamp = webform_strtotime($value_array[$key][$col]['month'] . '/' . $value_array[$key][$col]['day'] . '/' . $value_array[$key][$col]['year']);
+                    $format = webform_date_format('medium');
+                    $value_array[$key][$col] = format_date($timestamp, 'custom', $format, 'UTC');
+                } else {
+                    $value_array[$key][$col] = "";
+                }
+            }
+        }
+        $col++;
+    }
+    $matrix_value = array('headers' => $headers, 'rows' => $value_array);
+
     return array(
         '#title' => $component['name'],
         '#weight' => $component['weight'],
@@ -535,15 +573,13 @@ function _webform_display_matrix($component, $value, $format = 'html') {
     );
 }
 
-
-
 /**
  * Format the text output for this component.
  */
 function theme_webform_display_matrix($variables) {
 
-    $matrix_value=$variables['element']['#value'];
-    $output=theme('table',array('header'=>$matrix_value['headers'],'rows'=>$matrix_value['rows']));
+    $matrix_value = $variables['element']['#value'];
+    $output = theme('table', array('header' => $matrix_value['headers'], 'rows' => $matrix_value['rows']));
     return $output;
 }
 
@@ -587,34 +623,34 @@ function _webform_table_matrix($component, $value) {
 
     if ($value[0]) {
 
-		$sub_elements=$component['extra']['element'];
+        $sub_elements = $component['extra']['element'];
 
-		$value_array=unserialize($value[0]);
-		$col=1;
-		$headers=array();
-		foreach($sub_elements as $sub_element){
-			$headers[]=$sub_element['title'];
-			if($sub_element['type']=='select'){
-				$option_array=matrix_select_option_from_text($sub_element['option']);
-				foreach($value_array as $key=> $value_row){
-					if(isset($value_row[$col]))
-						$value_array[$key][$col]=array_key_exists($value_row[$col],$option_array)?$option_array[$value_row[$col]]:$value_row[$col];
-				}
-			}else if($sub_element['type']=='date' && !$sub_element['datepicker']){
-				foreach($value_array as $key=> $value_row){
-					if ($value_array[$key][$col]['year'] && $value_array[$key][$col]['month'] && $value_array[$key][$col]['day']) {
-						$timestamp = webform_strtotime($value_array[$key][$col]['month'] . '/' . $value_array[$key][$col]['day'] . '/' . $value_array[$key][$col]['year']);
-						$format = webform_date_format('short');
-						$value_array[$key][$col]=format_date($timestamp, 'custom', $format, 'UTC');
-					}else{
-						$value_array[$key][$col]="";
-					}
-				}
-			}
-			$col++;
-		}
-		$output=theme('table',array('header'=>$headers,'rows'=>$value_array));
-	    return $output;
+        $value_array = unserialize($value[0]);
+        $col = 1;
+        $headers = array();
+        foreach ($sub_elements as $sub_element) {
+            $headers[] = $sub_element['title'];
+            if ($sub_element['type'] == 'select') {
+                $option_array = matrix_select_option_from_text($sub_element['option']);
+                foreach ($value_array as $key => $value_row) {
+                    if (isset($value_row[$col]))
+                        $value_array[$key][$col] = array_key_exists($value_row[$col], $option_array) ? $option_array[$value_row[$col]] : $value_row[$col];
+                }
+            }else if ($sub_element['type'] == 'date' && !$sub_element['datepicker']) {
+                foreach ($value_array as $key => $value_row) {
+                    if ($value_array[$key][$col]['year'] && $value_array[$key][$col]['month'] && $value_array[$key][$col]['day']) {
+                        $timestamp = webform_strtotime($value_array[$key][$col]['month'] . '/' . $value_array[$key][$col]['day'] . '/' . $value_array[$key][$col]['year']);
+                        $format = webform_date_format('short');
+                        $value_array[$key][$col] = format_date($timestamp, 'custom', $format, 'UTC');
+                    } else {
+                        $value_array[$key][$col] = "";
+                    }
+                }
+            }
+            $col++;
+        }
+        $output = theme('table', array('header' => $headers, 'rows' => $value_array));
+        return $output;
     } else {
         return '';
     }
@@ -640,40 +676,40 @@ function _webform_csv_headers_matrix($component, $export_options) {
  * Implements _webform_csv_data_component().
  */
 function _webform_csv_data_matrix($component, $export_options, $value) {
-	
-    if ($value[0]) {
-		$value_array=webform_matrix_array($value[0]);
-		$sub_elements=$component['extra']['element'];
-		$col=1;
-		foreach($sub_elements as $sub_element){
-			if($sub_element['type']=='select'){
-				$option_array=matrix_select_option_from_text($sub_element['option']);
-				foreach($value_array as $key=> $value_row){
-					if(isset($value_row[$col]))
-						$value_array[$key][$col]=array_key_exists($value_row[$col],$option_array)?$option_array[$value_row[$col]]:$value_row[$col];
-				}
-			}else if($sub_element['type']=='date' && !$sub_element['datepicker']){
-				foreach($value_array as $key=> $value_row){
-					if ($value_array[$key][$col]['year'] && $value_array[$key][$col]['month'] && $value_array[$key][$col]['day']) {
-						$timestamp = webform_strtotime($value_array[$key][$col]['month'] . '/' . $value_array[$key][$col]['day'] . '/' . $value_array[$key][$col]['year']);
-						$format = webform_date_format('short');
-						$value_array[$key][$col]=format_date($timestamp, 'custom', $format, 'UTC');
-					}else{
-						$value_array[$key][$col]="";
-					}
-				}
-			}
-			
-			$col++;
-		}
-		
-		$reverse_array=matrix_array_reverse($value_array);
 
-		$csv_array=array();
-		foreach($reverse_array as $value){
-			$csv_array[]=implode(" - ",$value);
-		}
-		return $csv_array;
+    if ($value[0]) {
+        $value_array = webform_matrix_array($value[0]);
+        $sub_elements = $component['extra']['element'];
+        $col = 1;
+        foreach ($sub_elements as $sub_element) {
+            if ($sub_element['type'] == 'select') {
+                $option_array = matrix_select_option_from_text($sub_element['option']);
+                foreach ($value_array as $key => $value_row) {
+                    if (isset($value_row[$col]))
+                        $value_array[$key][$col] = array_key_exists($value_row[$col], $option_array) ? $option_array[$value_row[$col]] : $value_row[$col];
+                }
+            }else if ($sub_element['type'] == 'date' && !$sub_element['datepicker']) {
+                foreach ($value_array as $key => $value_row) {
+                    if ($value_array[$key][$col]['year'] && $value_array[$key][$col]['month'] && $value_array[$key][$col]['day']) {
+                        $timestamp = webform_strtotime($value_array[$key][$col]['month'] . '/' . $value_array[$key][$col]['day'] . '/' . $value_array[$key][$col]['year']);
+                        $format = webform_date_format('short');
+                        $value_array[$key][$col] = format_date($timestamp, 'custom', $format, 'UTC');
+                    } else {
+                        $value_array[$key][$col] = "";
+                    }
+                }
+            }
+
+            $col++;
+        }
+
+        $reverse_array = matrix_array_reverse($value_array);
+
+        $csv_array = array();
+        foreach ($reverse_array as $value) {
+            $csv_array[] = implode(" - ", $value);
+        }
+        return $csv_array;
     } else {
         return '';
     }
@@ -709,9 +745,9 @@ function matrix_select_option_from_text($options) {
  */
 function matrix_array_reverse($array) {
     $out = array();
-    foreach ($array as  $rowkey => $row) {
-        foreach($row as $colkey => $col){
-            $out[$colkey][$rowkey]=$col;
+    foreach ($array as $rowkey => $row) {
+        foreach ($row as $colkey => $col) {
+            $out[$colkey][$rowkey] = $col;
         }
     }
     return $out;
@@ -728,3 +764,4 @@ function webform_render_matrix_textfield_Numeric($element, $form_state) {
         }
     }
 }
+
