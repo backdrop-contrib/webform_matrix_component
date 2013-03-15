@@ -56,17 +56,7 @@ function _webform_theme_matrix() {
 function _webform_edit_matrix($component) {
 
     $form = array();
-    $form['name'] = array(
-        '#type' => 'textfield',
-        '#title' => t('Label'),
-        '#default_value' => $component['name'],
-        '#description' => t('The default value of the field.') . theme('webform_token_help'),
-        '#size' => 60,
-        '#maxlength' => 127,
-        '#weight' => 0,
-        '#required' => TRUE,
-    );
-
+    
     $max_rows = variable_get('webform_matrix_rows', 10);
     $form['extra']['matrix_row'] = array(
         '#type' => 'select',
@@ -96,6 +86,7 @@ function _webform_edit_matrix($component) {
 function webform_matrix_get_column_form($form, $form_state, $component) {
 
     $max_cols = variable_get('webform_matrix_cols', 10);
+    $form['#attached']['css'][] = drupal_get_path('module', 'webform_matrix_component') . '/webform_matrix_component.css';
     $form['extra']['matrix_col'] = array(
         '#type' => 'select',
         '#title' => t('Matrix Column'),

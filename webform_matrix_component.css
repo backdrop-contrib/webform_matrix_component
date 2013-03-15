@@ -7,3 +7,5 @@
 .matrix-render-row-div {clear:both;float:left;}
 .matrix-row-column-element .webform-component-date {width: 100% !important;}
 
+table#matrix-options{width:100%;}
+table#matrix-options td{width: 25% !important;}
