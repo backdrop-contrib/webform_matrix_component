@@ -56,7 +56,7 @@ function _webform_theme_matrix() {
 function _webform_edit_matrix($component) {
 
     $form = array();
-    
+
     $max_rows = variable_get('webform_matrix_rows', 10);
     $form['extra']['matrix_row'] = array(
         '#type' => 'select',
@@ -425,47 +425,47 @@ function theme_webform_matrix($variables) {
     return $output;
 }
 
-function theme_webform_date_matrix($variables){
+function theme_webform_date_matrix($variables) {
 
-	drupal_add_js(drupal_get_path('module','webform').'/js/webform.js');
+    drupal_add_js(drupal_get_path('module', 'webform') . '/js/webform.js');
 
-	$element = $variables['element'];
+    $element = $variables['element'];
 
-  $element['year']['#attributes']['class'] = array('year');
-  $element['month']['#attributes']['class'] = array('month');
-  $element['day']['#attributes']['class'] = array('day');
+    $element['year']['#attributes']['class'] = array('year');
+    $element['month']['#attributes']['class'] = array('month');
+    $element['day']['#attributes']['class'] = array('day');
 
-  // Add error classes to all items within the element.
-  if (form_get_error($element)) {
-    $element['year']['#attributes']['class'][] = 'error';
-    $element['month']['#attributes']['class'][] = 'error';
-    $element['day']['#attributes']['class'][] = 'error';
-  }
-
-  $class = array('webform-container-inline');
-
-  // Add the JavaScript calendar if available (provided by Date module package).
-  if (!empty($element['#datepicker'])) {
-    $class[] = 'webform-datepicker';
-    $calendar_class = array('webform-calendar');
-    if ($element['#start_date']) {
-      $calendar_class[] = 'webform-calendar-start-' . $element['#start_date'];
+    // Add error classes to all items within the element.
+    if (form_get_error($element)) {
+        $element['year']['#attributes']['class'][] = 'error';
+        $element['month']['#attributes']['class'][] = 'error';
+        $element['day']['#attributes']['class'][] = 'error';
     }
-    if ($element['#end_date']) {
-      $calendar_class[] = 'webform-calendar-end-' . $element['#end_date'];
+
+    $class = array('webform-container-inline');
+
+    // Add the JavaScript calendar if available (provided by Date module package).
+    if (!empty($element['#datepicker'])) {
+        $class[] = 'webform-datepicker';
+        $calendar_class = array('webform-calendar');
+        if ($element['#start_date']) {
+            $calendar_class[] = 'webform-calendar-start-' . $element['#start_date'];
+        }
+        if ($element['#end_date']) {
+            $calendar_class[] = 'webform-calendar-end-' . $element['#end_date'];
+        }
+        $calendar_class[] = 'webform-calendar-day-' . variable_get('date_first_day', 0);
+
+        $calendar = theme('webform_calendar', array('component' => NULL, 'calendar_classes' => $calendar_class));
     }
-    $calendar_class[] ='webform-calendar-day-' . variable_get('date_first_day', 0);
 
-    $calendar = theme('webform_calendar', array('component' => NULL, 'calendar_classes' => $calendar_class));
-  }
+    $output = '';
+    $output .= '<div class="' . implode(' ', $class) . '">';
+    $output .= drupal_render_children($element);
+    $output .= isset($calendar) ? $calendar : '';
+    $output .= '</div>';
 
-  $output = '';
-  $output .= '<div class="' . implode(' ', $class) . '">';
-  $output .= drupal_render_children($element);
-  $output .= isset($calendar) ? $calendar : '';
-  $output .= '</div>';
-
-  return $output;
+    return $output;
 }
 
 /**
