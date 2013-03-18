@@ -79,7 +79,7 @@ function _webform_edit_matrix($component) {
 }
 
 /**
- * Webform_edit_form extra form elements.
+ * webform_edit_form extra form elements.
  * @see webform_matrix_component_form_webform_component_edit_form_alter()
  */
 function webform_matrix_get_column_form($form, $form_state, $component) {
@@ -259,6 +259,7 @@ function webform_matrix_get_column_form($form, $form_state, $component) {
 
 /**
  * @see webform_matrix_get_column_form()
+ * #ajax callback
  */
 function _matrix_get_type_option(&$form, &$form_state) {
   return $form['extra']['element'];
@@ -412,7 +413,8 @@ function _webform_render_matrix($component, $value = NULL, $filter = TRUE) {
 }
 
 /**
- * Theme for webform matrix.
+ * @param $variables
+ * @return string
  */
 function theme_webform_matrix($variables) {
   $element = $variables['element'];
@@ -427,7 +429,8 @@ function theme_webform_matrix($variables) {
 }
 
 /**
- * Theme for date subcomponent for matrix
+ * @param $variables
+ * @return string
  */
 function theme_webform_date_matrix($variables) {
 
@@ -702,7 +705,7 @@ function _webform_csv_data_matrix($component, $export_options, $value) {
             $value_array[$key][$col] = array_key_exists($value_row[$col], $option_array) ? $option_array[$value_row[$col]] : $value_row[$col];
         }
       }
-      elseif ($sub_element['type'] == 'date') {
+      else if ($sub_element['type'] == 'date') {
         foreach ($value_array as $key => $value_row) {
           if ($value_array[$key][$col]['year'] && $value_array[$key][$col]['month'] && $value_array[$key][$col]['day']) {
             $timestamp = webform_strtotime($value_array[$key][$col]['month'] . '/' . $value_array[$key][$col]['day'] . '/' . $value_array[$key][$col]['year']);
