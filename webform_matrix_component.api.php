@@ -44,12 +44,12 @@ function webform_render_matrix_textfield_Alphabet($element, $form_state) {
 function hook_webform_edit_matrix_alter(&$element, &$element_values, $element_id) {
   $helptext = $element_values['helptext'];
   $element['helptext'] = array(
-      '#type' => 'textfield',
-      '#title' => 'Help Text',
-      '#size' => 15,
-      '#default_value' => $helptext,
-      '#parents' => array('extra', 'element', $element_id, 'helptext'),
-      '#weight' => 1,
+    '#type' => 'textfield',
+    '#title' => 'Help Text',
+    '#size' => 15,
+    '#default_value' => $helptext,
+    '#parents' => array('extra', 'element', $element_id, 'helptext'),
+    '#weight' => 1,
   );
 }
 

@@ -10,19 +10,19 @@
  */
 function _webform_defaults_matrix() {
   return array(
-      'name' => '',
-      'form_key' => NULL,
-      'pid' => 0,
-      'weight' => 0,
-      'value' => '',
-      'mandatory' => 0,
-      'extra' => array(
-          'matrix_col' => '1',
-          'matrix_row' => '1',
-          'title_display' => 0,
-          'description' => '',
-          'private' => FALSE,
-      ),
+    'name' => '',
+    'form_key' => NULL,
+    'pid' => 0,
+    'weight' => 0,
+    'value' => '',
+    'mandatory' => 0,
+    'extra' => array(
+        'matrix_col' => '1',
+        'matrix_row' => '1',
+        'title_display' => 0,
+        'description' => '',
+        'private' => FALSE,
+    ),
   );
 }
 
@@ -31,22 +31,22 @@ function _webform_defaults_matrix() {
  */
 function _webform_theme_matrix() {
   return
-          array(
-              'webform_matrix' => array(
-                  'render element' => 'element',
-                  'file' => 'components/matrix.inc',
-                  'path' => drupal_get_path('module', 'webform_matrix_component'),
-              ),
-              'webform_display_matrix' => array(
-                  'render element' => 'element',
-                  'file' => 'components/matrix.inc',
-                  'path' => drupal_get_path('module', 'webform_matrix_component'),
-              ),
-              'webform_date_matrix' => array(
-                  'render element' => 'element',
-                  'file' => 'components/matrix.inc',
-                  'path' => drupal_get_path('module', 'webform_matrix_component'),
-              ),
+    array(
+      'webform_matrix' => array(
+        'render element' => 'element',
+        'file' => 'components/matrix.inc',
+        'path' => drupal_get_path('module', 'webform_matrix_component'),
+      ),
+      'webform_display_matrix' => array(
+        'render element' => 'element',
+        'file' => 'components/matrix.inc',
+        'path' => drupal_get_path('module', 'webform_matrix_component'),
+      ),
+      'webform_date_matrix' => array(
+        'render element' => 'element',
+        'file' => 'components/matrix.inc',
+        'path' => drupal_get_path('module', 'webform_matrix_component'),
+      ),
   );
 }
 
@@ -58,21 +58,21 @@ function _webform_edit_matrix($component) {
   $form = array();
   $max_rows = variable_get('webform_matrix_rows', 10);
   $form['extra']['matrix_row'] = array(
-      '#type' => 'select',
-      '#title' => t('Matrix Rows'),
-      '#options' => array_combine(range(1, $max_rows), range(1, $max_rows)),
-      '#default_value' => isset($component['extra']['matrix_row']) ? $component['extra']['matrix_row'] : "1",
-      '#weight' => 0,
-      '#parents' => array('extra', 'matrix_row'),
+    '#type' => 'select',
+    '#title' => t('Matrix Rows'),
+    '#options' => array_combine(range(1, $max_rows), range(1, $max_rows)),
+    '#default_value' => isset($component['extra']['matrix_row']) ? $component['extra']['matrix_row'] : "1",
+    '#weight' => 0,
+    '#parents' => array('extra', 'matrix_row'),
   );
 
   $form['extra']['add_more'] = array(
-      '#type' => 'checkbox',
-      '#title' => t('Show Add More Button'),
-      '#default_value' => isset($component['extra']['add_more']) ? $component['extra']['add_more'] : 0,
-      '#weight' => 0,
-      '#parents' => array('extra', 'add_more'),
-      '#return_value' => 1,
+    '#type' => 'checkbox',
+    '#title' => t('Show Add More Button'),
+    '#default_value' => isset($component['extra']['add_more']) ? $component['extra']['add_more'] : 0,
+    '#weight' => 0,
+    '#parents' => array('extra', 'add_more'),
+    '#return_value' => 1,
   );
 
   return $form;
@@ -81,30 +81,30 @@ function _webform_edit_matrix($component) {
 /**
  * @see webform_matrix_component_form_webform_component_edit_form_alter
  * webform_edit_form extra form elements
- * */
+ */
 function webform_matrix_get_column_form($form, $form_state, $component) {
 
   $max_cols = variable_get('webform_matrix_cols', 10);
   $form['#attached']['css'][] = drupal_get_path('module', 'webform_matrix_component') . '/webform_matrix_component.css';
   $form['extra']['matrix_col'] = array(
-      '#type' => 'select',
-      '#title' => t('Matrix Column'),
-      '#options' => array_combine(range(1, $max_cols), range(1, $max_cols)),
-      '#default_value' => isset($component['extra']['matrix_col']) ? $component['extra']['matrix_col'] : "",
-      '#description' => t('Choose this will remove all your previos settings'),
-      '#parents' => array('extra', 'matrix_col'),
-      '#ajax' => array(
-          'wrapper' => 'matrix-settings-ajax',
-          'callback' => '_matrix_get_type_option',
-      ),
+    '#type' => 'select',
+    '#title' => t('Matrix Column'),
+    '#options' => array_combine(range(1, $max_cols), range(1, $max_cols)),
+    '#default_value' => isset($component['extra']['matrix_col']) ? $component['extra']['matrix_col'] : "",
+    '#description' => t('Choose this will remove all your previos settings'),
+    '#parents' => array('extra', 'matrix_col'),
+    '#ajax' => array(
+        'wrapper' => 'matrix-settings-ajax',
+        'callback' => '_matrix_get_type_option',
+    ),
   );
 
   $form['extra']['element'] = array(
-      '#type' => 'item',
-      '#title' => t('Configuration'),
-      '#prefix' => '<div id="matrix-settings-ajax">',
-      '#suffix' => '</div>',
-      '#tree' => TRUE,
+    '#type' => 'item',
+    '#title' => t('Configuration'),
+    '#prefix' => '<div id="matrix-settings-ajax">',
+    '#suffix' => '</div>',
+    '#tree' => TRUE,
   );
 
   $input_component = !empty($form_state['values']) ? $form_state['values']['extra'] : $component['extra'];
@@ -132,35 +132,35 @@ function webform_matrix_get_column_form($form, $form_state, $component) {
     $form['extra']['element'][$element_id]['#suffix'] = $suffix;
 
     $form['extra']['element'][$element_id]['type'] = array(
-        '#type' => 'select',
-        '#title' => $element_id,
-        '#options' => $ele_options,
-        '#default_value' => $element_type,
-        '#parents' => array('extra', 'element', $element_id, 'type'),
-        '#id' => "edit-extra-element-$element_id-type",
-        '#ajax' => array(
-            'wrapper' => 'matrix-settings-ajax',
-            'callback' => '_matrix_get_type_option',
-        ),
+      '#type' => 'select',
+      '#title' => $element_id,
+      '#options' => $ele_options,
+      '#default_value' => $element_type,
+      '#parents' => array('extra', 'element', $element_id, 'type'),
+      '#id' => "edit-extra-element-$element_id-type",
+      '#ajax' => array(
+          'wrapper' => 'matrix-settings-ajax',
+          'callback' => '_matrix_get_type_option',
+      ),
     );
 
     $form['extra']['element'][$element_id]['title'] = array(
-        '#type' => 'textfield',
-        '#title' => 'Title',
-        '#size' => 15,
-        '#default_value' => $element_title,
-        '#parents' => array('extra', 'element', $element_id, 'title'),
-        '#id' => "edit-extra-element-$element_id-title",
-        '#required' => TRUE,
+      '#type' => 'textfield',
+      '#title' => 'Title',
+      '#size' => 15,
+      '#default_value' => $element_title,
+      '#parents' => array('extra', 'element', $element_id, 'title'),
+      '#id' => "edit-extra-element-$element_id-title",
+      '#required' => TRUE,
     );
 
     $form['extra']['element'][$element_id]['mandatory'] = array(
-        '#type' => 'checkbox',
-        '#title' => 'Mandatory',
-        '#size' => 15,
-        '#default_value' => $element_mandatory,
-        '#parents' => array('extra', 'element', $element_id, 'mandatory'),
-        '#return_value' => 1,
+      '#type' => 'checkbox',
+      '#title' => 'Mandatory',
+      '#size' => 15,
+      '#default_value' => $element_mandatory,
+      '#parents' => array('extra', 'element', $element_id, 'mandatory'),
+      '#return_value' => 1,
     );
 
     switch ($element_type) {
@@ -169,81 +169,81 @@ function webform_matrix_get_column_form($form, $form_state, $component) {
         $validate_default = @$elementvalue['validate'];
         $validate_option_text = variable_get('textfield_validation', 'Numeric');
         $form['extra']['element'][$element_id]['validate'] = array(
-            '#type' => 'select',
-            '#title' => 'Validate',
-            '#default_value' => $validate_default,
-            '#parents' => array('extra', 'element', $element_id, 'validate'),
-            '#options' => matrix_select_option_from_text($validate_option_text),
-            '#empty_key' => 'None',
-            '#empty_value' => 'None',
+          '#type' => 'select',
+          '#title' => 'Validate',
+          '#default_value' => $validate_default,
+          '#parents' => array('extra', 'element', $element_id, 'validate'),
+          '#options' => matrix_select_option_from_text($validate_option_text),
+          '#empty_key' => 'None',
+          '#empty_value' => 'None',
         );
         break;
 
       case 'select':
         $option_array = @$elementvalue['option'];
         $form['extra']['element'][$element_id]['option'] = array(
-            '#type' => 'textarea',
-            '#title' => 'Option',
-            '#rows' => 2,
-            '#cols' => 15,
-            '#default_value' => $option_array,
-            '#parents' => array('extra', 'element', $element_id, 'option'),
-            '#required' => TRUE,
-            '#element_validate' => array('webform_edit_matrix_select'),
-            '#description' => t('<strong>Key-value pairs MUST be specified as "safe_key|Some readable option"</strong>. Use of only alphanumeric characters and underscores is recommended in keys.'),
+          '#type' => 'textarea',
+          '#title' => 'Option',
+          '#rows' => 2,
+          '#cols' => 15,
+          '#default_value' => $option_array,
+          '#parents' => array('extra', 'element', $element_id, 'option'),
+          '#required' => TRUE,
+          '#element_validate' => array('webform_edit_matrix_select'),
+          '#description' => t('<strong>Key-value pairs MUST be specified as "safe_key|Some readable option"</strong>. Use of only alphanumeric characters and underscores is recommended in keys.'),
         );
         break;
 
       case 'label':
         $label_name = @$elementvalue['label_name'];
         $form['extra']['element'][$element_id]['label_name'] = array(
-            '#type' => 'textfield',
-            '#title' => 'Label Name',
-            '#default_value' => $label_name,
-            '#size' => 15,
-            '#required' => TRUE,
-            '#parents' => array('extra', 'element', $element_id, 'label_name'),
+          '#type' => 'textfield',
+          '#title' => 'Label Name',
+          '#default_value' => $label_name,
+          '#size' => 15,
+          '#required' => TRUE,
+          '#parents' => array('extra', 'element', $element_id, 'label_name'),
         );
         break;
 
       case 'date':
 
         $form['extra']['element'][$element_id]['datepicker'] = array(
-            '#type' => 'checkbox',
-            '#title' => 'Calender',
-            '#default_value' => $is_datepicker,
-            '#parents' => array('extra', 'element', $element_id, 'datepicker'),
-            '#return_value' => 1,
-            '#description' => t('Default date type or calender one type element will show only.'),
+          '#type' => 'checkbox',
+          '#title' => 'Calender',
+          '#default_value' => $is_datepicker,
+          '#parents' => array('extra', 'element', $element_id, 'datepicker'),
+          '#return_value' => 1,
+          '#description' => t('Default date type or calender one type element will show only.'),
         );
 
         $start_date = @$elementvalue['startdate'];
         $form['extra']['element'][$element_id]['startdate'] = array(
-            '#type' => 'textfield',
-            '#title' => 'Start Date',
-            '#default_value' => !empty($start_date) ? $start_date : "-2 years",
-            '#size' => 15,
-            '#parents' => array('extra', 'element', $element_id, 'startdate'),
-            '#description' => t('The earliest date that may be entered into the field.') . '<br/>' . t('Accepts any date in any <a href="http://www.gnu.org/software/tar/manual/html_chapter/Date-input-formats.html">GNU Date Input Format</a>.'),
+          '#type' => 'textfield',
+          '#title' => 'Start Date',
+          '#default_value' => !empty($start_date) ? $start_date : "-2 years",
+          '#size' => 15,
+          '#parents' => array('extra', 'element', $element_id, 'startdate'),
+          '#description' => t('The earliest date that may be entered into the field.') . '<br/>' . t('Accepts any date in any <a href="http://www.gnu.org/software/tar/manual/html_chapter/Date-input-formats.html">GNU Date Input Format</a>.'),
         );
 
         $end_date = @$elementvalue['enddate'];
         $form['extra']['element'][$element_id]['enddate'] = array(
-            '#type' => 'textfield',
-            '#title' => 'End Date',
-            '#default_value' => !empty($end_date) ? $end_date : "+2 years",
-            '#size' => 15,
-            '#parents' => array('extra', 'element', $element_id, 'enddate'),
-            '#description' => t('The latest date that may be entered into the field.') . '<br/>' . t('Accepts any date in any <a href="http://www.gnu.org/software/tar/manual/html_chapter/Date-input-formats.html">GNU Date Input Format</a>.'),
+          '#type' => 'textfield',
+          '#title' => 'End Date',
+          '#default_value' => !empty($end_date) ? $end_date : "+2 years",
+          '#size' => 15,
+          '#parents' => array('extra', 'element', $element_id, 'enddate'),
+          '#description' => t('The latest date that may be entered into the field.') . '<br/>' . t('Accepts any date in any <a href="http://www.gnu.org/software/tar/manual/html_chapter/Date-input-formats.html">GNU Date Input Format</a>.'),
         );
 
         $default_date = @$elementvalue['default_date'];
         $form['extra']['element'][$element_id]['default_date'] = array(
-            '#type' => 'textfield',
-            '#title' => 'Default Date',
-            '#default_value' => !empty($default_date) ? $default_date : '',
-            '#size' => 15,
-            '#parents' => array('extra', 'element', $element_id, 'default_date'),
+          '#type' => 'textfield',
+          '#title' => 'Default Date',
+          '#default_value' => !empty($default_date) ? $default_date : '',
+          '#size' => 15,
+          '#parents' => array('extra', 'element', $element_id, 'default_date'),
         );
         break;
     }
@@ -316,14 +316,14 @@ function _webform_render_matrix($component, $value = NULL, $filter = TRUE) {
 
             case 'textfield':
               $element[$prow][$i] = array(
-                  '#type' => 'textfield',
-                  '#title' => $title,
-                  '#prefix' => $prefix,
-                  '#suffix' => $suffix,
-                  '#maxlength' => 50,
-                  '#default_value' => $editvalue[$prow][$i],
-                  '#required' => $required,
-                  '#title_display' => $title_display,
+                '#type' => 'textfield',
+                '#title' => $title,
+                '#prefix' => $prefix,
+                '#suffix' => $suffix,
+                '#maxlength' => 50,
+                '#default_value' => $editvalue[$prow][$i],
+                '#required' => $required,
+                '#title_display' => $title_display,
               );
               if (isset($elevalue['validate']) && $elevalue['validate'] != 'None') {
                 $element[$prow][$i]['#element_validate'] = array('webform_render_matrix_textfield_' . $elevalue['validate']);
@@ -337,16 +337,16 @@ function _webform_render_matrix($component, $value = NULL, $filter = TRUE) {
               $option_array = array();
               $option_array = matrix_select_option_from_text($options);
               $element[$prow][$i] = array(
-                  '#type' => 'select',
-                  '#title' => $title,
-                  '#options' => $option_array,
-                  '#prefix' => $prefix,
-                  '#suffix' => $suffix,
-                  '#default_value' => $editvalue[$prow][$i],
-                  '#required' => $required,
-                  '#title_display' => $title_display,
-                  '#empty_option' => 'Select',
-                  '#empty_value' => '_none',
+                '#type' => 'select',
+                '#title' => $title,
+                '#options' => $option_array,
+                '#prefix' => $prefix,
+                '#suffix' => $suffix,
+                '#default_value' => $editvalue[$prow][$i],
+                '#required' => $required,
+                '#title_display' => $title_display,
+                '#empty_option' => 'Select',
+                '#empty_value' => '_none',
               );
               break;
 
@@ -354,22 +354,22 @@ function _webform_render_matrix($component, $value = NULL, $filter = TRUE) {
 
               $datepicker = isset($elevalue['datepicker']) ? $elevalue['datepicker'] : FALSE;
               $element[$prow][$i] = array(
-                  '#type' => 'date',
-                  '#title' => $title,
-                  '#title_display' => $title_display,
-                  '#required' => $required,
-                  '#start_date' => !empty($elevalue['startdate']) ? $elevalue['startdate'] : '-2 years',
-                  '#end_date' => !empty($elevalue['enddate']) ? $elevalue['enddate'] : '+2 years',
-                  '#year_textfield' => 0,
-                  '#default_value' => !empty($editvalue[$prow][$i]) ? $editvalue[$prow][$i] : $elevalue['default_date'],
-                  '#timezone' => 'user',
-                  '#process' => array('webform_expand_date'),
-                  '#theme' => 'webform_date_matrix',
-                  '#theme_wrappers' => array('webform_element'),
-                  '#element_validate' => array('webform_validate_date'),
-                  '#datepicker' => $datepicker,
-                  '#prefix' => $prefix,
-                  '#suffix' => $suffix,
+                '#type' => 'date',
+                '#title' => $title,
+                '#title_display' => $title_display,
+                '#required' => $required,
+                '#start_date' => !empty($elevalue['startdate']) ? $elevalue['startdate'] : '-2 years',
+                '#end_date' => !empty($elevalue['enddate']) ? $elevalue['enddate'] : '+2 years',
+                '#year_textfield' => 0,
+                '#default_value' => !empty($editvalue[$prow][$i]) ? $editvalue[$prow][$i] : $elevalue['default_date'],
+                '#timezone' => 'user',
+                '#process' => array('webform_expand_date'),
+                '#theme' => 'webform_date_matrix',
+                '#theme_wrappers' => array('webform_element'),
+                '#element_validate' => array('webform_validate_date'),
+                '#datepicker' => $datepicker,
+                '#prefix' => $prefix,
+                '#suffix' => $suffix,
               );
 
 
@@ -378,14 +378,14 @@ function _webform_render_matrix($component, $value = NULL, $filter = TRUE) {
             case 'label':
               $label_name = $elevalue['label_name'];
               $element[$prow][$i] = array(
-                  '#type' => 'item',
-                  '#title' => $title,
-                  '#markup' => $label_name,
-                  '#attributes' => array('class' => array('form-item')),
-                  '#prefix' => $prefix,
-                  '#suffix' => $suffix,
-                  '#default_value' => $editvalue[$prow][$i],
-                  '#title_display' => $title_display,
+                '#type' => 'item',
+                '#title' => $title,
+                '#markup' => $label_name,
+                '#attributes' => array('class' => array('form-item')),
+                '#prefix' => $prefix,
+                '#suffix' => $suffix,
+                '#default_value' => $editvalue[$prow][$i],
+                '#title_display' => $title_display,
               );
               break;
           }
@@ -477,7 +477,7 @@ function _webform_submit_matrix($component, $value) {
 
 /**
  * validate webform_edit_form matrix components
- * */
+ */
 function webform_edit_matrix_select($element, &$form_state) {
 
   $lines = explode("\n", trim($element['#value']));
@@ -565,13 +565,13 @@ function _webform_display_matrix($component, $value, $format = 'html') {
   $matrix_value = array('headers' => $headers, 'rows' => $value_array);
 
   return array(
-      '#title' => $component['name'],
-      '#weight' => $component['weight'],
-      '#theme' => 'webform_display_matrix',
-      '#theme_wrappers' => $format == 'html' ? array('webform_element') : array('webform_element_text'),
-      '#format' => $format,
-      '#value' => $matrix_value,
-      '#translatable' => array('title'),
+    '#title' => $component['name'],
+    '#weight' => $component['weight'],
+    '#theme' => 'webform_display_matrix',
+    '#theme_wrappers' => $format == 'html' ? array('webform_element') : array('webform_element_text'),
+    '#format' => $format,
+    '#value' => $matrix_value,
+    '#translatable' => array('title'),
   );
 }
 
@@ -716,7 +716,7 @@ function _webform_csv_data_matrix($component, $export_options, $value) {
 
 /**
  * unseriaze matrix components values
- * */
+ */
 function webform_matrix_array($value) {
   return ($value != '') ? unserialize($value) : "";
 }
