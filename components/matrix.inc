@@ -110,11 +110,11 @@ function webform_matrix_get_column_form($form, $form_state, $component) {
   $input_component = !empty($form_state['values']) ? $form_state['values']['extra'] : $component['extra'];
   $matrix_col = isset($input_component['matrix_col']) ? $input_component['matrix_col'] : 1;
   $ele_options = array(
-                  'textfield' => 'Textfield',
-                  'select' => 'Select',
-                  'label' => 'Label',
-                  'date' => 'Date',
-                );
+    'textfield' => 'Textfield',
+    'select' => 'Select',
+    'label' => 'Label',
+    'date' => 'Date',
+  );
 
   for ($i = 1; $i <= $matrix_col; $i++) {
     $element_type = 'textfield';
@@ -412,6 +412,10 @@ function _webform_render_matrix($component, $value = NULL, $filter = TRUE) {
   return $element;
 }
 
+/**
+ * @param $variables
+ * @return string
+ */
 function theme_webform_matrix($variables) {
   $element = $variables['element'];
   $component = $element['#webform_component'];
@@ -424,6 +428,10 @@ function theme_webform_matrix($variables) {
   return $output;
 }
 
+/**
+ * @param $variables
+ * @return string
+ */
 function theme_webform_date_matrix($variables) {
 
   drupal_add_js(drupal_get_path('module', 'webform') . '/js/webform.js');
@@ -491,7 +499,8 @@ function webform_edit_matrix_select($element, &$form_state) {
     $line = trim($line);
     if (preg_match('/^\<([^>]*)\>$/', $line, $matches)) {
       $group = $matches[1];
-      $key = NULL; // No need to store group names.
+      // No need to store group names.
+      $key = NULL;
     }
     elseif (preg_match('/^([^|]*)\|(.*)$/', $line, $matches)) {
       $key = $matches[1];
@@ -506,7 +515,8 @@ function webform_edit_matrix_select($element, &$form_state) {
     if (isset($key)) {
       if (isset($existing_keys[$group][$key])) {
         $duplicate_keys[$key] = $key;
-      } else {
+      }
+      else {
         $existing_keys[$group][$key] = $key;
       }
     }
@@ -642,13 +652,15 @@ function _webform_table_matrix($component, $value) {
           if (isset($value_row[$col]))
             $value_array[$key][$col] = array_key_exists($value_row[$col], $option_array) ? $option_array[$value_row[$col]] : $value_row[$col];
         }
-      }else if ($sub_element['type'] == 'date') {
+      }
+      elseif ($sub_element['type'] == 'date') {
         foreach ($value_array as $key => $value_row) {
           if ($value_array[$key][$col]['year'] && $value_array[$key][$col]['month'] && $value_array[$key][$col]['day']) {
             $timestamp = webform_strtotime($value_array[$key][$col]['month'] . '/' . $value_array[$key][$col]['day'] . '/' . $value_array[$key][$col]['year']);
             $format = webform_date_format('short');
             $value_array[$key][$col] = format_date($timestamp, 'custom', $format, 'UTC');
-          } else {
+          }
+          else {
             $value_array[$key][$col] = "";
           }
         }
@@ -657,7 +669,8 @@ function _webform_table_matrix($component, $value) {
     }
     $output = theme('table', array('header' => $headers, 'rows' => $value_array));
     return $output;
-  } else {
+  }
+  else {
     return '';
   }
 }
@@ -691,18 +704,19 @@ function _webform_csv_data_matrix($component, $export_options, $value) {
           if (isset($value_row[$col]))
             $value_array[$key][$col] = array_key_exists($value_row[$col], $option_array) ? $option_array[$value_row[$col]] : $value_row[$col];
         }
-      }else if ($sub_element['type'] == 'date') {
+      }
+      else if ($sub_element['type'] == 'date') {
         foreach ($value_array as $key => $value_row) {
           if ($value_array[$key][$col]['year'] && $value_array[$key][$col]['month'] && $value_array[$key][$col]['day']) {
             $timestamp = webform_strtotime($value_array[$key][$col]['month'] . '/' . $value_array[$key][$col]['day'] . '/' . $value_array[$key][$col]['year']);
             $format = webform_date_format('short');
             $value_array[$key][$col] = format_date($timestamp, 'custom', $format, 'UTC');
-          } else {
+          }
+          else {
             $value_array[$key][$col] = "";
           }
         }
       }
-
       $col++;
     }
 
@@ -713,7 +727,8 @@ function _webform_csv_data_matrix($component, $export_options, $value) {
       $csv_array[] = implode(" - ", $value);
     }
     return $csv_array;
-  } else {
+  }
+  else {
     return '';
   }
 }

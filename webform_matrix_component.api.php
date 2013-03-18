@@ -61,9 +61,9 @@ function hook_webform_edit_matrix_alter(&$element, &$element_values, $element_id
  * Webform_render_matrix_alter for alter webform_render_matrix .
  * @see hook_webform_edit_matrix_alter
  * 
- * @param type $component
- * @param type $value
- * @param type $element
+ * @param $component
+ * @param $value
+ * @param $element
  */
 function hook_webform_render_matrix_alter(&$component, &$value, &$element) {
   $helptext = $value['helptext'];

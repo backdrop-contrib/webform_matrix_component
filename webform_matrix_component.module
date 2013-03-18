@@ -1,13 +1,18 @@
 <?php
+/**
+ * @file
+ * Provide matrix component for webform
+ * @author cpsinghal
+ */
+
+module_load_include('inc', 'webform_matrix_component', '/components/matrix');
+module_load_include('inc', 'webform', '/includes/webform.components');
 
 /**
  * Define components to Webform.
  * @see webform.api.php
  * @see webform_components()
  */
-module_load_include('inc', 'webform_matrix_component', '/components/matrix');
-module_load_include('inc', 'webform', '/includes/webform.components');
-
 function webform_matrix_component_webform_component_info() {
   $components = array();
 
@@ -29,7 +34,7 @@ function webform_matrix_component_webform_component_info() {
       // may always be displayed conditionally, regardless of this setting.
       // Defaults to TRUE.
       'conditional' => TRUE,
-      // If this component allows other components to be grouped within it 
+      // If this component allows other components to be grouped within it
       // (like a fieldset or tabs). Defaults to FALSE.
       'group' => TRUE,
       // Add content to CSV downloads. Defaults to TRUE.
@@ -38,13 +43,12 @@ function webform_matrix_component_webform_component_info() {
     'file' => 'components/matrix.inc',
     'file path' => drupal_get_path('module', 'webform_matrix_component'),
   );
-
   return $components;
 }
 
 /**
- * Implements hook_form_formid_alter()
- * Alter the webform_component_edit_form
+ * Implements hook_form_formid_alter().
+ * Alter the webform_component_edit_form.
  */
 function webform_matrix_component_form_webform_component_edit_form_alter(&$form, &$form_state, $formid) {
 
@@ -56,10 +60,10 @@ function webform_matrix_component_form_webform_component_edit_form_alter(&$form,
 }
 
 /**
- * Implements hook_form_formid_alter()
- * Admin settings for webform_matrix_component
- * Can define rows/cols for matrix components
- * Default rows-10,cols-10 
+ * Implements hook_form_formid_alter().
+ * Admin settings for webform_matrix_component.
+ * Can define rows/cols for matrix components.
+ * Default rows-10,cols-10.
  */
 function webform_matrix_component_form_webform_admin_settings_alter(&$form, &$form_state, $formid) {
 
@@ -79,7 +83,7 @@ function webform_matrix_component_form_webform_admin_settings_alter(&$form, &$fo
     '#integer' => TRUE,
     '#min' => 1,
     '#max' => 100,
-    '#step' => 1
+    '#step' => 1,
   );
   $form['matrix_fieldset']['webform_matrix_cols'] = array(
     '#type' => 'textfield',
@@ -90,7 +94,7 @@ function webform_matrix_component_form_webform_admin_settings_alter(&$form, &$fo
     '#integer' => TRUE,
     '#min' => 1,
     '#max' => 100,
-    '#step' => 1
+    '#step' => 1,
   );
   $form['matrix_fieldset']['textfield_validation'] = array(
     '#type' => 'textarea',
@@ -100,5 +104,4 @@ function webform_matrix_component_form_webform_admin_settings_alter(&$form, &$fo
     '#default_value' => variable_get('textfield_validation', 'Numeric'),
   );
 }
-
 
