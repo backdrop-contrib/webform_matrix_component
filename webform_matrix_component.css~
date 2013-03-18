@@ -1,9 +1,0 @@
-.matrix-render-div,.matrix-render-row-div{width:100%;clear:both;float: left;}
-.matrix-render-row-div .matrix-row-column-element{float:left;}
-.matrix-row-column-element .form-text{width:90%;}
-.matrix-row-column-element select{width:90%;}
-.matrix-row-column-element .webform-component-date .form-type-select{width:30% !important;display: inline-block;} 
-.matrix-row-column-element .webform-component-date .webform-datepicker .form-type-select{width:28% !important;} 
-.matrix-render-row-div {clear:both;float:left;}
-.matrix-row-column-element .webform-component-date {width: 100% !important;}
-
