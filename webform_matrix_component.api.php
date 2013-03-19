@@ -1,13 +1,12 @@
 <?php
+/**
+ * @file
+ * Sample hooks demonstrating usage in Webform_matrix_component.
+ */
 
 /**
  * Validate hook for matrix component.
  * You can define custom validation for this.
- *
- * @param $element
- *   element
- * @param $form_state
- *   form_state
  */
 function hook_webform_matrix_validate($element, $form_state) {
 }
@@ -34,8 +33,6 @@ function webform_render_matrix_textfield_Alphabet($element, $form_state) {
 
 /**
  * Implements hook_webform_edit_matrix_alter().
- * Webform_edit_matrix_alter for alter matrix edit form.
- * Like add helptext textfield.
  * @see hook_webform_render_matrix_alter
  */
 function hook_webform_edit_matrix_alter(&$element, &$element_values, $element_id) {
@@ -60,4 +57,5 @@ function hook_webform_render_matrix_alter(&$component, &$value, &$element) {
     $element['#field_suffix'] = $helptext;
   }
 }
+
 

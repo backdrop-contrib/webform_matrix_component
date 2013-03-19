@@ -427,7 +427,7 @@ function theme_webform_matrix($variables) {
 }
 
 /**
- * Theme for date subcomponent for matrix
+ * Theme for date subcomponent for matrix.
  */
 function theme_webform_date_matrix($variables) {
 
@@ -532,6 +532,9 @@ function webform_edit_matrix_select($element, &$form_state) {
   }
 }
 
+/**
+ * Check if the user filled the required fields.
+ */
 function webform_edit_matrix_date($element, $form_state) {
   // Check if the user filled the required fields.
   foreach (array('day', 'month', 'year') as $field_type) {

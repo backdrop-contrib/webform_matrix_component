@@ -3,4 +3,3 @@ description = Matrix Component for webform
 core = 7.x
 package = Webform
 dependencies[] = webform
-version = "7.x-3.18"
