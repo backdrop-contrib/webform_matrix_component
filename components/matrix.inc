@@ -138,7 +138,7 @@ function webform_matrix_get_column_form($form, $form_state, $component) {
 
     $form['extra']['element'][$element_id]['type'] = array(
       '#type' => 'select',
-      '#title' => $element_id,
+      '#title' => check_plain($element_id),
       '#options' => $ele_options,
       '#default_value' => $element_type,
       '#parents' => array('extra', 'element', $element_id, 'type'),
@@ -427,7 +427,7 @@ function theme_webform_matrix($variables) {
 }
 
 /**
- * Theme for date subcomponent for matrix.
+ * Theme for date subcomponent for matrix
  */
 function theme_webform_date_matrix($variables) {
 
@@ -532,14 +532,11 @@ function webform_edit_matrix_select($element, &$form_state) {
   }
 }
 
-/**
- * Check if the user filled the required fields.
- */
 function webform_edit_matrix_date($element, $form_state) {
   // Check if the user filled the required fields.
   foreach (array('day', 'month', 'year') as $field_type) {
     if (!is_numeric($element[$field_type]['#value']) && $element['#required']) {
-      form_error($element, t('!name field is required.', array('!name' => $element['#title'])));
+      form_error($element, t('!name field is required.', array('!name' => check_plain($element['#title']))));
       return;
     }
   }
@@ -561,7 +558,7 @@ function _webform_display_matrix($component, $value, $format = 'html') {
       foreach ($value_array as $key => $value_row) {
         $value_array[$key][$col] = array_key_exists($value_row[$col], $option_array) ? $option_array[$value_row[$col]] : $value_row[$col];
       }
-    } 
+    }
     elseif ($sub_element['type'] == 'date') {
       foreach ($value_array as $key => $value_row) {
         if ($value_array[$key][$col]['year'] && $value_array[$key][$col]['month'] && $value_array[$key][$col]['day']) {
@@ -649,8 +646,14 @@ function _webform_table_matrix($component, $value) {
       if ($sub_element['type'] == 'select') {
         $option_array = matrix_select_option_from_text($sub_element['option']);
         foreach ($value_array as $key => $value_row) {
-          if (isset($value_row[$col]))
-            $value_array[$key][$col] = array_key_exists($value_row[$col], $option_array) ? $option_array[$value_row[$col]] : $value_row[$col];
+          if (isset($value_row[$col])) {
+            if (array_key_exists($value_row[$col], $option_array)) {
+              $value_array[$key][$col] = $option_array[$value_row[$col]];
+            }
+            else {
+              $value_array[$key][$col] = $value_row[$col];
+            }
+          }
         }
       }
       elseif ($sub_element['type'] == 'date') {
@@ -701,8 +704,14 @@ function _webform_csv_data_matrix($component, $export_options, $value) {
       if ($sub_element['type'] == 'select') {
         $option_array = matrix_select_option_from_text($sub_element['option']);
         foreach ($value_array as $key => $value_row) {
-          if (isset($value_row[$col]))
-            $value_array[$key][$col] = array_key_exists($value_row[$col], $option_array) ? $option_array[$value_row[$col]] : $value_row[$col];
+          if (isset($value_row[$col])) {
+            if (array_key_exists($value_row[$col], $option_array)) {
+              $value_array[$key][$col] = $option_array[$value_row[$col]];    
+            }
+            else {
+              $value_array[$key][$col] = $value_row[$col];    
+            }
+          }  
         }
       }
       elseif ($sub_element['type'] == 'date') {
@@ -783,4 +792,3 @@ function webform_render_matrix_textfield_Numeric($element, $form_state) {
     }
   }
 }
-

@@ -60,12 +60,12 @@ function webform_matrix_component_form_webform_component_edit_form_alter(&$form,
 
 /**
  * Implements hook_form_formid_alter().
- * Admin settings for webform_matrix_component.
- * Can define rows/cols for matrix components.
- * Default rows-10,cols-10.
  */
 function webform_matrix_component_form_webform_admin_settings_alter(&$form, &$form_state, $formid) {
-
+  // Admin settings for webform_matrix_component
+  // Admin settings for webform_matrix_component
+  // Can define rows/cols for matrix components
+  // Default rows-10,cols-10.
   module_load_include('inc', 'webform', 'components/number');
   $form['matrix_fieldset'] = array(
     '#type' => 'fieldset',

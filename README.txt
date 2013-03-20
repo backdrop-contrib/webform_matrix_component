@@ -24,4 +24,3 @@ Installation
    "Content authoring" -> "Webform settings"
 
 4. Now matrix component is show in component list.
-
