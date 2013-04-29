@@ -258,6 +258,8 @@ function webform_matrix_get_column_form($form, $form_state, $component) {
 }
 
 /**
+ * Returns matrix_options.
+ *
  * @see webform_matrix_get_column_form()
  */
 function _matrix_get_type_option(&$form, &$form_state) {
@@ -427,7 +429,7 @@ function theme_webform_matrix($variables) {
 }
 
 /**
- * Theme for date subcomponent for matrix
+ * Theme for date subcomponent for matrix.
  */
 function theme_webform_date_matrix($variables) {
 
@@ -532,6 +534,9 @@ function webform_edit_matrix_select($element, &$form_state) {
   }
 }
 
+/**
+ * Implements webform_edit_matrix_date().
+ */
 function webform_edit_matrix_date($element, $form_state) {
   // Check if the user filled the required fields.
   foreach (array('day', 'month', 'year') as $field_type) {
@@ -706,12 +711,12 @@ function _webform_csv_data_matrix($component, $export_options, $value) {
         foreach ($value_array as $key => $value_row) {
           if (isset($value_row[$col])) {
             if (array_key_exists($value_row[$col], $option_array)) {
-              $value_array[$key][$col] = $option_array[$value_row[$col]];    
+              $value_array[$key][$col] = $option_array[$value_row[$col]];
             }
             else {
-              $value_array[$key][$col] = $value_row[$col];    
+              $value_array[$key][$col] = $value_row[$col];
             }
-          }  
+          }
         }
       }
       elseif ($sub_element['type'] == 'date') {
