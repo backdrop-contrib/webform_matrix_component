@@ -56,7 +56,7 @@ function _webform_theme_matrix() {
 function _webform_edit_matrix($component) {
 
   $form = array();
-  $max_rows = variable_get('webform_matrix_rows', 10);
+  $max_rows = variable_get('webform_matrix_component_webform_matrix_rows', 10);
   $form['extra']['matrix_row'] = array(
     '#type' => 'select',
     '#title' => t('Matrix Rows'),
@@ -84,7 +84,7 @@ function _webform_edit_matrix($component) {
  */
 function webform_matrix_get_column_form($form, $form_state, $component) {
 
-  $max_cols = variable_get('webform_matrix_cols', 10);
+  $max_cols = variable_get('webform_matrix_component_webform_matrix_cols', 10);
   $form['#attached']['css'][] = drupal_get_path('module', 'webform_matrix_component') . '/webform_matrix_component.css';
   $form['extra']['matrix_col'] = array(
     '#type' => 'select',
@@ -172,7 +172,7 @@ function webform_matrix_get_column_form($form, $form_state, $component) {
 
       case 'textfield':
         $validate_default = @$elementvalue['validate'];
-        $validate_option_text = variable_get('textfield_validation', 'Numeric');
+        $validate_option_text = variable_get('webform_matrix_component_textfield_validation', 'Numeric');
         $form['extra']['element'][$element_id]['validate'] = array(
           '#type' => 'select',
           '#title' => 'Validate',

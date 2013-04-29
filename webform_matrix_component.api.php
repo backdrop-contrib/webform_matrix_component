@@ -1,13 +1,19 @@
 <?php
 
 /**
+ * @file
+ * Sample hooks demonstrating usage in Webform_matrix_component.
+ */
+
+/**
  * Validate hook for matrix component.
+ *
  * You can define custom validation for this.
  *
  * @param $element
  *   The Webform matrix element array is used to validate form element.
  * @param $form_state
- *   The Webform matrix form_state array is used to get actual form element value.
+ *   The Webform matrix form_state array.
  */
 function hook_webform_matrix_validate($element, $form_state) {
 }
