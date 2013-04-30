@@ -103,4 +103,3 @@ function webform_matrix_component_form_webform_admin_settings_alter(&$form, &$fo
     '#default_value' => variable_get('webform_matrix_component_textfield_validation', 'Numeric'),
   );
 }
-
