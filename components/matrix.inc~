@@ -194,7 +194,7 @@ function _webform_matrix_component_get_column_form($form, $form_state, $componen
           '#default_value' => $option_array,
           '#parents' => array('extra', 'element', $element_id, 'option'),
           '#required' => TRUE,
-          '#element_validate' => array('webform_edit_matrix_select'),
+          '#element_validate' => array('_webform_matrix_component_edit_select'),
           '#description' => t('<strong>Key-value pairs MUST be specified as "safe_key|Some readable option"</strong>. Use of only alphanumeric characters and underscores is recommended in keys.'),
         );
         break;
@@ -331,7 +331,7 @@ function _webform_render_matrix($component, $value = NULL, $filter = TRUE) {
                 '#title_display' => $title_display,
               );
               if (isset($elevalue['validate']) && $elevalue['validate'] != 'None') {
-                $element[$prow][$i]['#element_validate'] = array('webform_render_matrix_textfield_' . $elevalue['validate']);
+                $element[$prow][$i]['#element_validate'] = array('_webform_matrix_component_render_textfield_' . $elevalue['validate']);
               }
 
               break;
@@ -485,7 +485,7 @@ function _webform_submit_matrix($component, $value) {
 /**
  * Validate webform_edit_form matrix components.
  */
-function webform_edit_matrix_select($element, &$form_state) {
+function _webform_matrix_component_edit_select($element, &$form_state) {
 
   $lines = explode("\n", trim($element['#value']));
   $existing_keys = array();
@@ -623,7 +623,7 @@ function _webform_analysis_matrix($component, $sids = array()) {
   foreach ($result as $row) {
     $submissions++;
     if ($row['data']) {
-      $matrixs[] = _webform_matrix_componenet_array($row['data']);
+      $matrixs[] = _webform_matrix_component_matrix_array($row['data']);
     }
   }
 
@@ -702,7 +702,7 @@ function _webform_csv_headers_matrix($component, $export_options) {
 function _webform_csv_data_matrix($component, $export_options, $value) {
 
   if ($value[0]) {
-    $value_array = _webform_matrix_componenet_array($value[0]);
+    $value_array = _webform_matrix_component_matrix_array($value[0]);
     $sub_elements = $component['extra']['element'];
     $col = 1;
     foreach ($sub_elements as $sub_element) {
@@ -734,7 +734,7 @@ function _webform_csv_data_matrix($component, $export_options, $value) {
       $col++;
     }
 
-    $reverse_array = _webform_matric_component_array_reverse($value_array);
+    $reverse_array = _webform_matrix_component_array_reverse($value_array);
 
     $csv_array = array();
     foreach ($reverse_array as $value) {
@@ -750,7 +750,7 @@ function _webform_csv_data_matrix($component, $export_options, $value) {
 /**
  * Unseriaze matrix components values.
  */
-function _webform_matrix_componenet_array($value) {
+function _webform_matrix_component_matrix_array($value) {
   return ($value != '') ? unserialize($value) : "";
 }
 
@@ -776,7 +776,7 @@ function _webform_matrix_component_select_option_from_text($options) {
 /**
  * This is simple function to convert array rows to cols.
  */
-function _webform_matric_component_array_reverse($array) {
+function _webform_matrix_component_array_reverse($array) {
   $out = array();
   foreach ($array as $rowkey => $row) {
     foreach ($row as $colkey => $col) {
@@ -789,7 +789,7 @@ function _webform_matric_component_array_reverse($array) {
 /**
  * Validate textfield Numeric validation.
  */
-function webform_render_matrix_textfield_Numeric($element, $form_state) {
+function _webform_matrix_component_render_textfield_Numeric($element, $form_state) {
   $value = $element['#value'];
   if (!empty($value)) {
     if (!is_numeric($value)) {
@@ -797,4 +797,3 @@ function webform_render_matrix_textfield_Numeric($element, $form_state) {
     }
   }
 }
-
