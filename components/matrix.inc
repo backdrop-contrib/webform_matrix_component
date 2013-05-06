@@ -151,7 +151,7 @@ function _webform_matrix_component_get_column_form($form, $form_state, $componen
 
     $form['extra']['element'][$element_id]['title'] = array(
       '#type' => 'textfield',
-      '#title' => 'Title',
+      '#title' => t('Title'),
       '#size' => 15,
       '#default_value' => $element_title,
       '#parents' => array('extra', 'element', $element_id, 'title'),
@@ -161,7 +161,7 @@ function _webform_matrix_component_get_column_form($form, $form_state, $componen
 
     $form['extra']['element'][$element_id]['mandatory'] = array(
       '#type' => 'checkbox',
-      '#title' => 'Mandatory',
+      '#title' => t('Mandatory'),
       '#size' => 15,
       '#default_value' => $element_mandatory,
       '#parents' => array('extra', 'element', $element_id, 'mandatory'),
@@ -175,7 +175,7 @@ function _webform_matrix_component_get_column_form($form, $form_state, $componen
         $validate_option_text = variable_get('webform_matrix_component_textfield_validation', 'Numeric');
         $form['extra']['element'][$element_id]['validate'] = array(
           '#type' => 'select',
-          '#title' => 'Validate',
+          '#title' => t('Validate'),
           '#default_value' => $validate_default,
           '#parents' => array('extra', 'element', $element_id, 'validate'),
           '#options' => _webform_matrix_component_select_option_from_text($validate_option_text),
@@ -188,7 +188,7 @@ function _webform_matrix_component_get_column_form($form, $form_state, $componen
         $option_array = @$elementvalue['option'];
         $form['extra']['element'][$element_id]['option'] = array(
           '#type' => 'textarea',
-          '#title' => 'Option',
+          '#title' => t('Option'),
           '#rows' => 2,
           '#cols' => 15,
           '#default_value' => $option_array,
@@ -203,7 +203,7 @@ function _webform_matrix_component_get_column_form($form, $form_state, $componen
         $label_name = @$elementvalue['label_name'];
         $form['extra']['element'][$element_id]['label_name'] = array(
           '#type' => 'textfield',
-          '#title' => 'Label Name',
+          '#title' => t('Label Name'),
           '#default_value' => $label_name,
           '#size' => 15,
           '#required' => TRUE,
@@ -214,7 +214,7 @@ function _webform_matrix_component_get_column_form($form, $form_state, $componen
       case 'date':
         $form['extra']['element'][$element_id]['datepicker'] = array(
           '#type' => 'checkbox',
-          '#title' => 'Calender',
+          '#title' => t('Calender'),
           '#default_value' => $is_datepicker,
           '#parents' => array('extra', 'element', $element_id, 'datepicker'),
           '#return_value' => 1,
@@ -224,7 +224,7 @@ function _webform_matrix_component_get_column_form($form, $form_state, $componen
         $start_date = @$elementvalue['startdate'];
         $form['extra']['element'][$element_id]['startdate'] = array(
           '#type' => 'textfield',
-          '#title' => 'Start Date',
+          '#title' => t('Start Date'),
           '#default_value' => !empty($start_date) ? $start_date : "-2 years",
           '#size' => 15,
           '#parents' => array('extra', 'element', $element_id, 'startdate'),
@@ -234,7 +234,7 @@ function _webform_matrix_component_get_column_form($form, $form_state, $componen
         $end_date = @$elementvalue['enddate'];
         $form['extra']['element'][$element_id]['enddate'] = array(
           '#type' => 'textfield',
-          '#title' => 'End Date',
+          '#title' => t('End Date'),
           '#default_value' => !empty($end_date) ? $end_date : "+2 years",
           '#size' => 15,
           '#parents' => array('extra', 'element', $element_id, 'enddate'),
@@ -244,7 +244,7 @@ function _webform_matrix_component_get_column_form($form, $form_state, $componen
         $default_date = @$elementvalue['default_date'];
         $form['extra']['element'][$element_id]['default_date'] = array(
           '#type' => 'textfield',
-          '#title' => 'Default Date',
+          '#title' => t('Default Date'),
           '#default_value' => !empty($default_date) ? $default_date : '',
           '#size' => 15,
           '#parents' => array('extra', 'element', $element_id, 'default_date'),
