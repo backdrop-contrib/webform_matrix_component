@@ -277,11 +277,14 @@ function _webform_render_matrix($component, $value = NULL, $filter = TRUE) {
   $formkey = $component['form_key'];
   $pid = $component['pid'];
   $element = array();
+  $element['#weight'] = $component['weight'];
   $element['#webform_component'] = $component;
   $element['#attached']['css'][] = drupal_get_path('module', 'webform_matrix_component') . '/webform_matrix_component.css';
-  $element['value'] = array(
-    '#markup' => "<label>" . $component['name'] . "</label>",
-  );
+  if($component['extra']['title_display']!=0){
+    $element['value'] = array(
+      '#markup' => "<label>" . _webform_filter_xss($component['name']) . "</label>",
+    );
+  };
   $datepicker = FALSE;
 
   if (isset($component['extra']['matrix_col'])) {
@@ -541,7 +544,7 @@ function _webform_matrix_component_edit_date($element, $form_state) {
   // Check if the user filled the required fields.
   foreach (array('day', 'month', 'year') as $field_type) {
     if (!is_numeric($element[$field_type]['#value']) && $element['#required']) {
-      form_error($element, t('!name field is required.', array('!name' => check_plain($element['#title']))));
+      form_error($element, t('@name field is required.', array('@name' => $element['#title'])));
       return;
     }
   }
@@ -558,7 +561,12 @@ function _webform_display_matrix($component, $value, $format = 'html') {
   $col = 1;
   foreach ($sub_elements as $sub_element) {
     $headers[] = $sub_element['title'];
-    if ($sub_element['type'] == 'select') {
+    if ($sub_element['type'] == 'textfield') {
+	foreach ($value_array as $key => $value_row) {
+      	  $value_array[$key][$col]=check_plain($value_row[$col]);
+	}
+    }
+    elseif ($sub_element['type'] == 'select') {
       $option_array = _webform_matrix_component_select_option_from_text($sub_element['option']);
       foreach ($value_array as $key => $value_row) {
         $value_array[$key][$col] = array_key_exists($value_row[$col], $option_array) ? $option_array[$value_row[$col]] : $value_row[$col];
@@ -648,7 +656,12 @@ function _webform_table_matrix($component, $value) {
     $headers = array();
     foreach ($sub_elements as $sub_element) {
       $headers[] = $sub_element['title'];
-      if ($sub_element['type'] == 'select') {
+      if ($sub_element['type'] == 'textfield') {
+      	foreach ($value_array as $key => $value_row) {
+          $value_array[$key][$col]=  check_plain($value_row[$col]);
+        }
+      }
+      elseif ($sub_element['type'] == 'select') {
         $option_array = _webform_matrix_component_select_option_from_text($sub_element['option']);
         foreach ($value_array as $key => $value_row) {
           if (isset($value_row[$col])) {
@@ -706,7 +719,12 @@ function _webform_csv_data_matrix($component, $export_options, $value) {
     $sub_elements = $component['extra']['element'];
     $col = 1;
     foreach ($sub_elements as $sub_element) {
-      if ($sub_element['type'] == 'select') {
+      if ($sub_element['type'] == 'textfield') {
+      	foreach ($value_array as $key => $value_row) {
+          $value_array[$key][$col]=  check_plain($value_row[$col]);
+        }
+      }	
+      elseif ($sub_element['type'] == 'select') {
         $option_array = _webform_matrix_component_select_option_from_text($sub_element['option']);
         foreach ($value_array as $key => $value_row) {
           if (isset($value_row[$col])) {
