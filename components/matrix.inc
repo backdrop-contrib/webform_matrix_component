@@ -280,7 +280,7 @@ function _webform_render_matrix($component, $value = NULL, $filter = TRUE) {
   $element['#weight'] = $component['weight'];
   $element['#webform_component'] = $component;
   $element['#attached']['css'][] = drupal_get_path('module', 'webform_matrix_component') . '/webform_matrix_component.css';
-  if($component['extra']['title_display']!=0){
+  if ($component['extra']['title_display'] != 0){
     $element['value'] = array(
       '#markup' => "<label>" . _webform_filter_xss($component['name']) . "</label>",
     );
@@ -562,9 +562,9 @@ function _webform_display_matrix($component, $value, $format = 'html') {
   foreach ($sub_elements as $sub_element) {
     $headers[] = $sub_element['title'];
     if ($sub_element['type'] == 'textfield') {
-	foreach ($value_array as $key => $value_row) {
-      	  $value_array[$key][$col]=check_plain($value_row[$col]);
-	}
+      foreach ($value_array as $key => $value_row) {
+	$value_array[$key][$col]=check_plain($value_row[$col]);
+      }
     }
     elseif ($sub_element['type'] == 'select') {
       $option_array = _webform_matrix_component_select_option_from_text($sub_element['option']);
@@ -657,7 +657,7 @@ function _webform_table_matrix($component, $value) {
     foreach ($sub_elements as $sub_element) {
       $headers[] = $sub_element['title'];
       if ($sub_element['type'] == 'textfield') {
-      	foreach ($value_array as $key => $value_row) {
+        foreach ($value_array as $key => $value_row) {
           $value_array[$key][$col]=  check_plain($value_row[$col]);
         }
       }
@@ -720,10 +720,10 @@ function _webform_csv_data_matrix($component, $export_options, $value) {
     $col = 1;
     foreach ($sub_elements as $sub_element) {
       if ($sub_element['type'] == 'textfield') {
-      	foreach ($value_array as $key => $value_row) {
-          $value_array[$key][$col]=  check_plain($value_row[$col]);
+        foreach ($value_array as $key => $value_row) {
+          $value_array[$key][$col] = check_plain($value_row[$col]);
         }
-      }	
+      }
       elseif ($sub_element['type'] == 'select') {
         $option_array = _webform_matrix_component_select_option_from_text($sub_element['option']);
         foreach ($value_array as $key => $value_row) {
