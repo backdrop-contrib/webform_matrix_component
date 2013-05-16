@@ -280,7 +280,7 @@ function _webform_render_matrix($component, $value = NULL, $filter = TRUE) {
   $element['#weight'] = $component['weight'];
   $element['#webform_component'] = $component;
   $element['#attached']['css'][] = drupal_get_path('module', 'webform_matrix_component') . '/webform_matrix_component.css';
-  if ($component['extra']['title_display'] != 0){
+  if ($component['extra']['title_display'] != 0) {
     $element['value'] = array(
       '#markup' => "<label>" . _webform_filter_xss($component['name']) . "</label>",
     );
@@ -563,7 +563,7 @@ function _webform_display_matrix($component, $value, $format = 'html') {
     $headers[] = $sub_element['title'];
     if ($sub_element['type'] == 'textfield') {
       foreach ($value_array as $key => $value_row) {
-	$value_array[$key][$col]=check_plain($value_row[$col]);
+        $value_array[$key][$col] = check_plain($value_row[$col]);
       }
     }
     elseif ($sub_element['type'] == 'select') {
@@ -658,7 +658,7 @@ function _webform_table_matrix($component, $value) {
       $headers[] = $sub_element['title'];
       if ($sub_element['type'] == 'textfield') {
         foreach ($value_array as $key => $value_row) {
-          $value_array[$key][$col]=  check_plain($value_row[$col]);
+          $value_array[$key][$col] = check_plain($value_row[$col]);
         }
       }
       elseif ($sub_element['type'] == 'select') {
