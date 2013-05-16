@@ -170,20 +170,6 @@ function _webform_matrix_component_get_column_form($form, $form_state, $componen
 
     switch ($element_type) {
 
-      case 'textfield':
-        $validate_default = @$elementvalue['validate'];
-        $validate_option_text = variable_get('webform_matrix_component_textfield_validation', 'Numeric');
-        $form['extra']['element'][$element_id]['validate'] = array(
-          '#type' => 'select',
-          '#title' => t('Validate'),
-          '#default_value' => $validate_default,
-          '#parents' => array('extra', 'element', $element_id, 'validate'),
-          '#options' => _webform_matrix_component_select_option_from_text($validate_option_text),
-          '#empty_key' => 'None',
-          '#empty_value' => 'None',
-        );
-        break;
-
       case 'select':
         $option_array = @$elementvalue['option'];
         $form['extra']['element'][$element_id]['option'] = array(
@@ -333,9 +319,6 @@ function _webform_render_matrix($component, $value = NULL, $filter = TRUE) {
                 '#required' => $required,
                 '#title_display' => $title_display,
               );
-              if (isset($elevalue['validate']) && $elevalue['validate'] != 'None') {
-                $element[$prow][$i]['#element_validate'] = array('_webform_matrix_component_textfield_' . $elevalue['validate']);
-              }
 
               break;
 
@@ -802,16 +785,4 @@ function _webform_matrix_component_array_reverse($array) {
     }
   }
   return $out;
-}
-
-/**
- * Validate textfield Numeric validation.
- */
-function _webform_matrix_component_textfield_Numeric($element, $form_state) {
-  $value = $element['#value'];
-  if (!empty($value)) {
-    if (!is_numeric($value)) {
-      form_error($element, t('Only Numeric value is allowed'));
-    }
-  }
 }
