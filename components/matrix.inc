@@ -66,15 +66,6 @@ function _webform_edit_matrix($component) {
     '#parents' => array('extra', 'matrix_row'),
   );
 
-  $form['extra']['add_more'] = array(
-    '#type' => 'checkbox',
-    '#title' => t('Show Add More Button'),
-    '#default_value' => isset($component['extra']['add_more']) ? $component['extra']['add_more'] : 0,
-    '#weight' => 0,
-    '#parents' => array('extra', 'add_more'),
-    '#return_value' => 1,
-  );
-
   return $form;
 }
 
