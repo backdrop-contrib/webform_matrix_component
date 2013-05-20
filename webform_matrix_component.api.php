@@ -14,26 +14,6 @@ function hook_webform_matrix_validate($element, $form_state) {
 }
 
 /**
- * Validate textfield Numeric validation.
- * @see webform_render_matrix_textfield_Numeric()
- */
-function webform_render_matrix_textfield_Numeric($element, $form_state) {
-  $value = $element['#value'];
-  if (!empty($value)) {
-    if (!is_numeric($value)) {
-      form_error($element, t('Only Numeric value is allowed'));
-    }
-  }
-}
-
-/**
- * Validate textfield Numeric validation.
- * @see webform_render_matrix_textfield_Numeric()
- */
-function webform_render_matrix_textfield_Alphabet($element, $form_state) {
-}
-
-/**
  * Implements hook_webform_edit_matrix_alter().
  *
  * Webform_edit_matrix_alter for alter matrix edit form.

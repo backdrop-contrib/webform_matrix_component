@@ -95,11 +95,4 @@ function webform_matrix_component_form_webform_admin_settings_alter(&$form, &$fo
     '#max' => 100,
     '#step' => 1,
   );
-  $form['matrix_fieldset']['webform_matrix_component_textfield_validation'] = array(
-    '#type' => 'textarea',
-    '#title' => t('Textfield Validation'),
-    '#description' => t('You can extend textfield validation.Seperate By new line.
-          create new function webform_render_matrix_textfield_% in your module file. pass element & form_state as arguments. Otherwise you will get error call to undefines function.'),
-    '#default_value' => variable_get('webform_matrix_component_textfield_validation', 'Numeric'),
-  );
 }
