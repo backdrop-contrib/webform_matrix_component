@@ -537,7 +537,9 @@ function _webform_display_matrix($component, $value, $format = 'html') {
     $headers[] = $sub_element['title'];
     if ($sub_element['type'] == 'textfield') {
       foreach ($value_array as $key => $value_row) {
-        $value_array[$key][$col] = check_plain($value_row[$col]);
+        if (!empty($value_row[$col])) {
+          $value_array[$key][$col] = check_plain($value_row[$col]);
+        }
       }
     }
     elseif ($sub_element['type'] == 'select') {
@@ -632,7 +634,9 @@ function _webform_table_matrix($component, $value) {
       $headers[] = $sub_element['title'];
       if ($sub_element['type'] == 'textfield') {
         foreach ($value_array as $key => $value_row) {
-          $value_array[$key][$col] = check_plain($value_row[$col]);
+          if (!empty($value_row[$col])) {
+            $value_array[$key][$col] = check_plain($value_row[$col]);
+          }
         }
       }
       elseif ($sub_element['type'] == 'select') {
@@ -695,7 +699,9 @@ function _webform_csv_data_matrix($component, $export_options, $value) {
     foreach ($sub_elements as $sub_element) {
       if ($sub_element['type'] == 'textfield') {
         foreach ($value_array as $key => $value_row) {
-          $value_array[$key][$col] = check_plain($value_row[$col]);
+          if (!empty($value_row[$col])) {
+            $value_array[$key][$col] = check_plain($value_row[$col]);
+          }
         }
       }
       elseif ($sub_element['type'] == 'select') {
