@@ -534,7 +534,7 @@ function _webform_display_matrix($component, $value, $format = 'html') {
   $sub_elements = $component['extra']['element'];
   $col = 1;
   foreach ($sub_elements as $sub_element) {
-    $headers[] = $sub_element['title'];
+    $headers[] = check_plain($sub_element['title']);
     if ($sub_element['type'] == 'textfield') {
       foreach ($value_array as $key => $value_row) {
         if (!empty($value_row[$col])) {
@@ -631,7 +631,7 @@ function _webform_table_matrix($component, $value) {
     $col = 1;
     $headers = array();
     foreach ($sub_elements as $sub_element) {
-      $headers[] = $sub_element['title'];
+      $headers[] = check_plain($sub_element['title']);
       if ($sub_element['type'] == 'textfield') {
         foreach ($value_array as $key => $value_row) {
           if (!empty($value_row[$col])) {
@@ -681,8 +681,8 @@ function _webform_csv_headers_matrix($component, $export_options) {
   $header = array();
   $sub_elements = $component['extra']['element'];
   foreach ($sub_elements as $sub_element) {
-    $header[1][] = $component['name'];
-    $header[2][] = $sub_element['title'];
+    $header[1][] = check_plain($component['name']);
+    $header[2][] = check_plain($sub_element['title']);
   }
   return $header;
 }
