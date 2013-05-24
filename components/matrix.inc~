@@ -101,10 +101,10 @@ function _webform_matrix_component_get_column_form($form, $form_state, $componen
   $input_component = !empty($form_state['values']) ? $form_state['values']['extra'] : $component['extra'];
   $matrix_col = isset($input_component['matrix_col']) ? $input_component['matrix_col'] : 1;
   $ele_options = array(
-    'textfield' => t('Textfield'),
-    'select' => t('Select'),
-    'label' => t('Label'),
-    'date' => t('Date'),
+    'textfield' => 'Textfield',
+    'select' => 'Select',
+    'label' => 'Label',
+    'date' => 'Date',
   );
 
   for ($i = 1; $i <= $matrix_col; $i++) {

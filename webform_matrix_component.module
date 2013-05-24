@@ -2,7 +2,6 @@
 /**
  * @file
  * Provide matrix component for webform
- * @author cpsinghal
  */
 
 module_load_include('inc', 'webform_matrix_component', '/components/matrix');
