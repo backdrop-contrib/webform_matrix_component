@@ -35,7 +35,7 @@ function webform_matrix_component_webform_component_info() {
       'conditional' => TRUE,
       // If this component allows other components to be grouped within it
       // (like a fieldset or tabs). Defaults to FALSE.
-      'group' => TRUE,
+      'group' => FALSE,
       // Add content to CSV downloads. Defaults to TRUE.
       'csv' => TRUE,
     ),

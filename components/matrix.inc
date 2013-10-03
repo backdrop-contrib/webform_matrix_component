@@ -531,38 +531,14 @@ function _webform_display_matrix($component, $value, $format = 'html') {
 
   $headers = array();
   $value_array = isset($value[0]) ? unserialize($value[0]) : '';
+  if(empty($value_array)){
+    return array();
+  }   
   $sub_elements = $component['extra']['element'];
-  $col = 1;
-  foreach ($sub_elements as $sub_element) {
-    $headers[] = check_plain($sub_element['title']);
-    if ($sub_element['type'] == 'textfield') {
-      foreach ($value_array as $key => $value_row) {
-        if (!empty($value_row[$col])) {
-          $value_array[$key][$col] = check_plain($value_row[$col]);
-        }
-      }
-    }
-    elseif ($sub_element['type'] == 'select') {
-      $option_array = _webform_matrix_component_select_option_from_text($sub_element['option']);
-      foreach ($value_array as $key => $value_row) {
-        $value_array[$key][$col] = array_key_exists($value_row[$col], $option_array) ? $option_array[$value_row[$col]] : $value_row[$col];
-      }
-    }
-    elseif ($sub_element['type'] == 'date') {
-      foreach ($value_array as $key => $value_row) {
-        if ($value_array[$key][$col]['year'] && $value_array[$key][$col]['month'] && $value_array[$key][$col]['day']) {
-          $timestamp = webform_strtotime($value_array[$key][$col]['month'] . '/' . $value_array[$key][$col]['day'] . '/' . $value_array[$key][$col]['year']);
-          $format = webform_date_format('medium');
-          $value_array[$key][$col] = format_date($timestamp, 'custom', $format, 'UTC');
-        }
-        else {
-          $value_array[$key][$col] = "";
-        }
-      }
-    }
-    $col++;
-  }
-  $matrix_value = array('headers' => $headers, 'rows' => $value_array);
+  
+  $display_array = _webform_display_array($sub_elements, $value_array,$headers);
+  
+  $matrix_value = array('headers' => $headers, 'rows' => $display_array);
 
   return array(
     '#title' => $component['name'],
@@ -628,45 +604,17 @@ function _webform_table_matrix($component, $value) {
     $sub_elements = $component['extra']['element'];
 
     $value_array = unserialize($value[0]);
+    
+    if(empty($value_array)){
+        return array();
+    }
+    
     $col = 1;
     $headers = array();
-    foreach ($sub_elements as $sub_element) {
-      $headers[] = check_plain($sub_element['title']);
-      if ($sub_element['type'] == 'textfield') {
-        foreach ($value_array as $key => $value_row) {
-          if (!empty($value_row[$col])) {
-            $value_array[$key][$col] = check_plain($value_row[$col]);
-          }
-        }
-      }
-      elseif ($sub_element['type'] == 'select') {
-        $option_array = _webform_matrix_component_select_option_from_text($sub_element['option']);
-        foreach ($value_array as $key => $value_row) {
-          if (isset($value_row[$col])) {
-            if (array_key_exists($value_row[$col], $option_array)) {
-              $value_array[$key][$col] = $option_array[$value_row[$col]];
-            }
-            else {
-              $value_array[$key][$col] = $value_row[$col];
-            }
-          }
-        }
-      }
-      elseif ($sub_element['type'] == 'date') {
-        foreach ($value_array as $key => $value_row) {
-          if ($value_array[$key][$col]['year'] && $value_array[$key][$col]['month'] && $value_array[$key][$col]['day']) {
-            $timestamp = webform_strtotime($value_array[$key][$col]['month'] . '/' . $value_array[$key][$col]['day'] . '/' . $value_array[$key][$col]['year']);
-            $format = webform_date_format('short');
-            $value_array[$key][$col] = format_date($timestamp, 'custom', $format, 'UTC');
-          }
-          else {
-            $value_array[$key][$col] = "";
-          }
-        }
-      }
-      $col++;
-    }
-    $output = theme('table', array('header' => $headers, 'rows' => $value_array));
+    $display_array = _webform_display_array($sub_elements, $value_array,$headers);
+    
+    $output = theme('table', array('header' => $headers, 'rows' => $display_array));
+    
     return $output;
   }
   else {
@@ -694,46 +642,15 @@ function _webform_csv_data_matrix($component, $export_options, $value) {
 
   if ($value[0]) {
     $value_array = _webform_matrix_component_array($value[0]);
-    $sub_elements = $component['extra']['element'];
-    $col = 1;
-    foreach ($sub_elements as $sub_element) {
-      if ($sub_element['type'] == 'textfield') {
-        foreach ($value_array as $key => $value_row) {
-          if (!empty($value_row[$col])) {
-            $value_array[$key][$col] = check_plain($value_row[$col]);
-          }
-        }
-      }
-      elseif ($sub_element['type'] == 'select') {
-        $option_array = _webform_matrix_component_select_option_from_text($sub_element['option']);
-        foreach ($value_array as $key => $value_row) {
-          if (isset($value_row[$col])) {
-            if (array_key_exists($value_row[$col], $option_array)) {
-              $value_array[$key][$col] = $option_array[$value_row[$col]];
-            }
-            else {
-              $value_array[$key][$col] = $value_row[$col];
-            }
-          }
-        }
-      }
-      elseif ($sub_element['type'] == 'date') {
-        foreach ($value_array as $key => $value_row) {
-          if ($value_array[$key][$col]['year'] && $value_array[$key][$col]['month'] && $value_array[$key][$col]['day']) {
-            $timestamp = webform_strtotime($value_array[$key][$col]['month'] . '/' . $value_array[$key][$col]['day'] . '/' . $value_array[$key][$col]['year']);
-            $format = webform_date_format('short');
-            $value_array[$key][$col] = format_date($timestamp, 'custom', $format, 'UTC');
-          }
-          else {
-            $value_array[$key][$col] = "";
-          }
-        }
-      }
-      $col++;
+    if(empty($value_array)){
+        return array();
     }
-
-    $reverse_array = _webform_matrix_component_array_reverse($value_array);
-
+    $sub_elements = $component['extra']['element'];
+    
+    //Return managable display array
+    $display_array =  _webform_display_array($sub_elements, $value_array);
+    
+    $reverse_array = _webform_matrix_component_array_reverse($display_array);
     $csv_array = array();
     foreach ($reverse_array as $value) {
       $csv_array[] = implode(" - ", $value);
@@ -782,4 +699,63 @@ function _webform_matrix_component_array_reverse($array) {
     }
   }
   return $out;
+}
+
+/**
+ * This is return display array
+ * @param array $sub_elements matrix node compoenent
+ * @param array $value_array matrix submission result
+ * @return $display_array display result
+ */
+function _webform_display_array($sub_elements,$value_array,&$headers=array()){
+  
+    $col = 1;
+    
+    foreach ($sub_elements as $sub_element) {
+        
+      $headers[] = check_plain($sub_element['title']);  
+      
+      if ($sub_element['type'] == 'textfield') {
+        foreach ($value_array as $key => $value_row) {
+          if (!empty($value_row[$col])) {
+            $display_array[$key][$col] = check_plain($value_row[$col]);
+          }
+          else{
+            $display_array[$key][$col] = "";  
+          }
+        }
+      }
+      elseif ($sub_element['type'] == 'select') {
+        $option_array = _webform_matrix_component_select_option_from_text($sub_element['option']);
+        foreach ($value_array as $key => $value_row) {
+          if (isset($value_row[$col])) {
+            if (array_key_exists($value_row[$col], $option_array)) {
+              $display_array[$key][$col] = $option_array[$value_row[$col]];
+            }
+            else {
+              $display_array[$key][$col] = $value_row[$col];
+            }
+          }
+        }
+      }
+      elseif ($sub_element['type'] == 'date') {
+        foreach ($value_array as $key => $value_row) {
+          if ($value_array[$key][$col]['year'] && $value_array[$key][$col]['month'] && $value_array[$key][$col]['day']) {
+            $timestamp = webform_strtotime($value_array[$key][$col]['month'] . '/' . $value_array[$key][$col]['day'] . '/' . $value_array[$key][$col]['year']);
+            $format = webform_date_format('short');
+            $display_array[$key][$col] = format_date($timestamp, 'custom', $format, 'UTC');
+          }
+          else {
+            $display_array[$key][$col] = "";
+          }
+        }
+      }
+      else{
+        foreach ($value_array as $key => $value_row) {
+          $display_array[$key][$col] = $sub_element['label_name'];
+        }
+      }
+      $col++;
+    }
+    return $display_array;
 }
