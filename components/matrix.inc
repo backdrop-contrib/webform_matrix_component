@@ -102,7 +102,7 @@ function _webform_matrix_component_get_column_form($form, $form_state, $componen
   $matrix_col = isset($input_component['matrix_col']) ? $input_component['matrix_col'] : 1;
   $ele_options = array(
     'textfield' => t('Textfield'),
-    'select' => t('Select'),
+    'select' => t('Select Options'),
     'label' => t('Label'),
     'date' => t('Date'),
   );
@@ -174,6 +174,31 @@ function _webform_matrix_component_get_column_form($form, $form_state, $componen
           '#element_validate' => array('_webform_matrix_component_edit_select'),
           '#description' => t('<strong>Key-value pairs MUST be specified as "safe_key|Some readable option"</strong>. Use of only alphanumeric characters and underscores is recommended in keys.'),
         );
+
+        /*
+         * Select Type Radio/Checkbox
+         * If Multiple is true then checkbox
+         */
+        $select_type = @$elementvalue['select_type'];
+        $form['extra']['element'][$element_id]['select_type'] = array(
+          '#type' => 'select',
+          '#title' => t('Select Type'),
+          '#default_value' => empty($select_type) ? array('list') : $select_type,
+          '#options' => array('list' => 'Listbox', 'radio' => 'Radio/Checkbox'),
+          '#parents' => array('extra', 'element', $element_id, 'select_type'),
+          '#required' => TRUE,
+          '#description' => t('Choose Select Option Type'),
+        );
+
+        $is_multiple = @$elementvalue['multiple'];
+        $form['extra']['element'][$element_id]['multiple'] = array(
+            '#type' => 'checkbox',
+            '#title' => t('Multiple'),
+            '#size' => 15,
+            '#default_value' => $is_multiple,
+            '#parents' => array('extra', 'element', $element_id, 'multiple'),
+            '#return_value' => 1,
+          );
         break;
 
       case 'label':
@@ -314,21 +339,57 @@ function _webform_render_matrix($component, $value = NULL, $filter = TRUE) {
               break;
 
             case 'select':
+
+              //Choose Select Type Radio/ListBox/Checkbox
+              $select_type = isset($elevalue['select_type']) ? $elevalue['select_type'] : 'list';
+
+              $is_multiple = isset($elevalue['multiple']) ? $elevalue['multiple'] : 0;
+              //Options
               $options = $elevalue['option'];
               $option_array = array();
+
+              //Convert option to string to array
               $option_array = _webform_matrix_component_select_option_from_text($options);
-              $element[$prow][$i] = array(
-                '#type' => 'select',
-                '#title' => $title,
-                '#options' => $option_array,
-                '#prefix' => $prefix,
-                '#suffix' => $suffix,
-                '#default_value' => $editvalue[$prow][$i],
-                '#required' => $required,
-                '#title_display' => $title_display,
-                '#empty_option' => 'Select',
-                '#empty_value' => '_none',
-              );
+
+              switch ($select_type) {
+                case 'list':
+                    $element[$prow][$i] = array(
+                      '#type' => 'select',
+                      '#title' => $title,
+                      '#options' => $option_array,
+                      '#prefix' => $prefix,
+                      '#suffix' => $suffix,
+                      '#default_value' => $editvalue[$prow][$i],
+                      '#required' => $required,
+                      '#title_display' => $title_display,
+                      '#empty_option' => 'Select',
+                      '#empty_value' => '_none',
+                      );
+                    if ($is_multiple) {
+                        $element[$prow][$i]['#multiple'] = TRUE;
+                    }
+                    break;
+
+                case 'radio':
+                    //If multiple is TRUE then checkbox else radio
+                    $element[$prow][$i] = array(
+                       '#title' => $title,
+                      '#options' => $option_array,
+                      '#prefix' => $prefix,
+                      '#suffix' => $suffix,
+                      '#required' => $required,
+                      '#title_display' => $title_display,
+                      );
+                    if ($is_multiple) {
+                        $element[$prow][$i]['#type'] = 'checkboxes';
+                        $element[$prow][$i]['default_value'] = is_array($editvalue[$prow][$i]) ? $editvalue[$prow][$i] : array($editvalue[$prow][$i]);
+                    }
+                    else{
+                        $element[$prow][$i]['#type'] = 'radios';
+                        $element[$prow][$i]['default_value'] = $editvalue[$prow][$i];
+                    }
+                    break;
+              }
               break;
 
             case 'date':
@@ -531,13 +592,13 @@ function _webform_display_matrix($component, $value, $format = 'html') {
 
   $headers = array();
   $value_array = isset($value[0]) ? unserialize($value[0]) : '';
-  if(empty($value_array)){
+  if (empty($value_array)) {
     return array();
-  }   
+  }
   $sub_elements = $component['extra']['element'];
-  
-  $display_array = _webform_display_array($sub_elements, $value_array,$headers);
-  
+
+  $display_array = _webform_display_array($sub_elements, $value_array, $headers);
+
   $matrix_value = array('headers' => $headers, 'rows' => $display_array);
 
   return array(
@@ -604,17 +665,17 @@ function _webform_table_matrix($component, $value) {
     $sub_elements = $component['extra']['element'];
 
     $value_array = unserialize($value[0]);
-    
-    if(empty($value_array)){
+
+    if (empty($value_array)) {
         return array();
     }
-    
+
     $col = 1;
     $headers = array();
-    $display_array = _webform_display_array($sub_elements, $value_array,$headers);
-    
+    $display_array = _webform_display_array($sub_elements, $value_array, $headers);
+
     $output = theme('table', array('header' => $headers, 'rows' => $display_array));
-    
+
     return $output;
   }
   else {
@@ -642,14 +703,14 @@ function _webform_csv_data_matrix($component, $export_options, $value) {
 
   if ($value[0]) {
     $value_array = _webform_matrix_component_array($value[0]);
-    if(empty($value_array)){
+    if (empty($value_array)) {
         return array();
     }
     $sub_elements = $component['extra']['element'];
-    
+
     //Return managable display array
     $display_array =  _webform_display_array($sub_elements, $value_array);
-    
+
     $reverse_array = _webform_matrix_component_array_reverse($display_array);
     $csv_array = array();
     foreach ($reverse_array as $value) {
@@ -707,34 +768,59 @@ function _webform_matrix_component_array_reverse($array) {
  * @param array $value_array matrix submission result
  * @return $display_array display result
  */
-function _webform_display_array($sub_elements,$value_array,&$headers=array()){
-  
+function _webform_display_array($sub_elements, $value_array, &$headers = array()) {
+
     $col = 1;
-    
+
     foreach ($sub_elements as $sub_element) {
-        
-      $headers[] = check_plain($sub_element['title']);  
-      
+
+      $headers[] = check_plain($sub_element['title']);
+
       if ($sub_element['type'] == 'textfield') {
         foreach ($value_array as $key => $value_row) {
           if (!empty($value_row[$col])) {
             $display_array[$key][$col] = check_plain($value_row[$col]);
           }
           else{
-            $display_array[$key][$col] = "";  
+            $display_array[$key][$col] = "";
           }
         }
       }
       elseif ($sub_element['type'] == 'select') {
         $option_array = _webform_matrix_component_select_option_from_text($sub_element['option']);
+
         foreach ($value_array as $key => $value_row) {
           if (isset($value_row[$col])) {
-            if (array_key_exists($value_row[$col], $option_array)) {
-              $display_array[$key][$col] = $option_array[$value_row[$col]];
+
+            //Check for multiple
+            $is_multiple= @$sub_element['multiple'];
+
+            if (is_array($value_row[$col])) {
+                $select_values_options = array();
+                foreach ($value_row[$col] as $select_values) {
+                    if (array_key_exists($select_values, $option_array)) {
+                        $select_values_options[] = $option_array[$select_values];
+                    }
+                }
+                if (!empty($select_values_options)) {
+                    $display_array[$key][$col] = implode(',', $select_values_options);
+                }
+                else{
+                    $display_array[$key][$col] = '_none';
+                }
             }
-            else {
-              $display_array[$key][$col] = $value_row[$col];
+            else{
+                //Previous functionality
+                if (array_key_exists($value_row[$col], $option_array)) {
+                  $display_array[$key][$col] = $option_array[$value_row[$col]];
+                }
+                else {
+                  $display_array[$key][$col] = $value_row[$col];
+                }
             }
+          }
+          else{
+              $display_array[$key][$col] = '_none';
           }
         }
       }
@@ -757,5 +843,6 @@ function _webform_display_array($sub_elements,$value_array,&$headers=array()){
       }
       $col++;
     }
+
     return $display_array;
 }
