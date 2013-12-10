@@ -320,6 +320,7 @@ function _webform_render_matrix($component, $value = NULL, $filter = TRUE) {
     for ($prow = 1; $prow <= $matrix_row; $prow++) {
       if (isset($component['extra']['element'])) {
 
+	$element['#headers'] = array();
         foreach ($component['extra']['element'] as $elekey => $elevalue) {
           list($j, $i) = explode('-', $elekey);
 
