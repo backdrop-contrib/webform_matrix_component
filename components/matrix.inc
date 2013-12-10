@@ -160,7 +160,32 @@ function _webform_matrix_component_get_column_form($form, $form_state, $componen
     );
 
     switch ($element_type) {
-
+        
+      case 'textfield':
+        $size = !empty($elementvalue['size'])?$elementvalue['size']:50;
+        $form['extra']['element'][$element_id]['size'] = array(
+          '#type' => 'textfield',
+          '#title' => t('Textfield Size'),
+          '#default_value' => $size,
+          '#size' => 15,
+          '#required' => TRUE,
+          '#parents' => array('extra', 'element', $element_id, 'size'),
+          '#element_validate' => array('_webform_matrix_component_validate_number'),
+        );
+        
+        $maxlength = !empty($elementvalue['maxlength'])?$elementvalue['maxlength']:50;
+        $form['extra']['element'][$element_id]['maxlength'] = array(
+          '#type' => 'textfield',
+          '#title' => t('Maxlength'),
+          '#default_value' => $maxlength,
+          '#size' => 15,
+          '#required' => TRUE,
+          '#parents' => array('extra', 'element', $element_id, 'maxlength'),
+          '#element_validate' => array('_webform_matrix_component_validate_number'),
+          
+        );
+        break;
+    
       case 'select':
         $option_array = @$elementvalue['option'];
         $form['extra']['element'][$element_id]['option'] = array(
@@ -282,10 +307,9 @@ function _webform_render_matrix($component, $value = NULL, $filter = TRUE) {
   $element['#weight'] = $component['weight'];
   $element['#webform_component'] = $component;
   $element['#attached']['css'][] = drupal_get_path('module', 'webform_matrix_component') . '/webform_matrix_component.css';
-  if ($component['extra']['title_display'] != 0) {
-    $element['value'] = array(
-      '#markup' => "<label>" . _webform_filter_xss($component['name']) . "</label>",
-    );
+  
+  if ($component['extra']['title_display'] !== 'none') {
+    $element['#main_header'] = _webform_filter_xss($component['name']);
   };
   $datepicker = FALSE;
 
@@ -296,19 +320,13 @@ function _webform_render_matrix($component, $value = NULL, $filter = TRUE) {
     for ($prow = 1; $prow <= $matrix_row; $prow++) {
       if (isset($component['extra']['element'])) {
 
-        $element[$prow]['#prefix'] = "<div class='matrix-render-row-div matrix-render-col-$matrix_col'>";
-        $element[$prow]['#suffix'] = "</div>";
-
         foreach ($component['extra']['element'] as $elekey => $elevalue) {
           list($j, $i) = explode('-', $elekey);
 
-          $width = 100 / $matrix_col;
-          $width = $width - .001;
-          $prefix = "<div style='width:$width% !important;' class='matrix-row-column-element'>";
-          $suffix = "</div>";
           $eletype = $elevalue['type'];
           $title = isset($elevalue['title']) ? $elevalue['title'] : $elekey;
-          $title_display = ($prow == 1) ? 'before' : "invisible";
+          $element['#headers'][] = $title;
+          $title_display = "invisible";
 
           // Only first row is manadatory.
           $required = FALSE;
@@ -328,12 +346,12 @@ function _webform_render_matrix($component, $value = NULL, $filter = TRUE) {
               $element[$prow][$i] = array(
                 '#type' => 'textfield',
                 '#title' => $title,
-                '#prefix' => $prefix,
-                '#suffix' => $suffix,
                 '#maxlength' => 50,
                 '#default_value' => $editvalue[$prow][$i],
                 '#required' => $required,
                 '#title_display' => $title_display,
+                '#size' => !empty($elevalue['size']) ? $elevalue['size'] : 15,
+                '#maxlength' => !empty($elevalue['maxlength']) ? $elevalue['maxlength'] : 50,  
               );
 
               break;
@@ -357,8 +375,6 @@ function _webform_render_matrix($component, $value = NULL, $filter = TRUE) {
                       '#type' => 'select',
                       '#title' => $title,
                       '#options' => $option_array,
-                      '#prefix' => $prefix,
-                      '#suffix' => $suffix,
                       '#default_value' => $editvalue[$prow][$i],
                       '#required' => $required,
                       '#title_display' => $title_display,
@@ -375,8 +391,6 @@ function _webform_render_matrix($component, $value = NULL, $filter = TRUE) {
                     $element[$prow][$i] = array(
                        '#title' => $title,
                       '#options' => $option_array,
-                      '#prefix' => $prefix,
-                      '#suffix' => $suffix,
                       '#required' => $required,
                       '#title_display' => $title_display,
                       );
@@ -409,8 +423,6 @@ function _webform_render_matrix($component, $value = NULL, $filter = TRUE) {
                 '#theme_wrappers' => array('webform_element'),
                 '#element_validate' => array('webform_validate_date'),
                 '#datepicker' => $datepicker,
-                '#prefix' => $prefix,
-                '#suffix' => $suffix,
               );
               break;
 
@@ -421,8 +433,6 @@ function _webform_render_matrix($component, $value = NULL, $filter = TRUE) {
                 '#title' => $title,
                 '#markup' => $label_name,
                 '#attributes' => array('class' => array('form-item')),
-                '#prefix' => $prefix,
-                '#suffix' => $suffix,
                 '#default_value' => $editvalue[$prow][$i],
                 '#title_display' => $title_display,
               );
@@ -460,7 +470,27 @@ function theme_webform_matrix($variables) {
   $form_key = $component['form_key'];
   $pid = $component['pid'];
   $id = "edit-$form_key-$pid";
+  
+  $matrix_col = $component['extra']['matrix_col'];
+  $matrix_row = $component['extra']['matrix_row'];
+  
+  //Matrix rows and cols
+  $headers=$element['#headers'];
+  $rows = array();
+  for ($i = 1; $i <= $matrix_row; $i++) {
+      $cols=array();
+      for ($j = 1; $j <= $matrix_col; $j++) {
+          $cols[]=  drupal_render($element[$i][$j]);
+      }
+      $rows[]=$cols;
+  }
+  
   $output = "<div class='matrix-render-div' id='$id'>";
+  
+  //Check if title_display checkbox is unchecked
+  $output .= isset($element['#main_header']) ? "<label>" . $element['#main_header'] . "<label>" : "";
+  
+  $output .= theme('table', array('header' => $headers, 'rows' => $rows));
   $output .= drupal_render_children($element);
   $output .= "</div>";
   return $output;
@@ -845,4 +875,14 @@ function _webform_display_array($sub_elements, $value_array, &$headers = array()
     }
 
     return $display_array;
+}
+
+/**
+ * Validate Number
+ */
+function _webform_matrix_component_validate_number($element, &$form_state) {
+    $value = trim($element['#value']);
+    if (!is_numeric($value) && !is_int($value)) {
+        form_error($element, t('Maxlength and Size should be integer.'));
+    }
 }
