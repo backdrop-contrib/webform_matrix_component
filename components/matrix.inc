@@ -470,7 +470,7 @@ function theme_webform_matrix($variables) {
   $component = $element['#webform_component'];
   $form_key = $component['form_key'];
   $pid = $component['pid'];
-  $id = "edit-$form_key-$pid";
+  
   
   $matrix_col = $component['extra']['matrix_col'];
   $matrix_row = $component['extra']['matrix_row'];
@@ -485,8 +485,9 @@ function theme_webform_matrix($variables) {
       }
       $rows[]=$cols;
   }
-  
-  $output = "<div class='matrix-render-div' id='$id'>";
+  $form_class = str_replace('_', '-', $form_key);
+
+  $output = "<div class='form-item webform-component webform-component-matrix webform-component--$form_class' id='webform-component-$form_class'>";
   
   //Check if title_display checkbox is unchecked
   $output .= isset($element['#main_header']) ? "<label>" . $element['#main_header'] . "<label>" : "";
