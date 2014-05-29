@@ -160,7 +160,7 @@ function _webform_matrix_component_get_column_form($form, $form_state, $componen
     );
 
     switch ($element_type) {
-
+        
       case 'textfield':
         $size = !empty($elementvalue['size'])?$elementvalue['size']:50;
         $form['extra']['element'][$element_id]['size'] = array(
@@ -172,7 +172,7 @@ function _webform_matrix_component_get_column_form($form, $form_state, $componen
           '#parents' => array('extra', 'element', $element_id, 'size'),
           '#element_validate' => array('_webform_matrix_component_validate_number'),
         );
-
+        
         $maxlength = !empty($elementvalue['maxlength'])?$elementvalue['maxlength']:50;
         $form['extra']['element'][$element_id]['maxlength'] = array(
           '#type' => 'textfield',
@@ -182,10 +182,10 @@ function _webform_matrix_component_get_column_form($form, $form_state, $componen
           '#required' => TRUE,
           '#parents' => array('extra', 'element', $element_id, 'maxlength'),
           '#element_validate' => array('_webform_matrix_component_validate_number'),
-
+          
         );
         break;
-
+    
       case 'select':
         $option_array = @$elementvalue['option'];
         $form['extra']['element'][$element_id]['option'] = array(
@@ -307,7 +307,7 @@ function _webform_render_matrix($component, $value = NULL, $filter = TRUE) {
   $element['#weight'] = $component['weight'];
   $element['#webform_component'] = $component;
   $element['#attached']['css'][] = drupal_get_path('module', 'webform_matrix_component') . '/webform_matrix_component.css';
-
+  
   if ($component['extra']['title_display'] !== 'none') {
     $element['#main_header'] = _webform_filter_xss($component['name']);
   };
@@ -352,7 +352,7 @@ function _webform_render_matrix($component, $value = NULL, $filter = TRUE) {
                 '#required' => $required,
                 '#title_display' => $title_display,
                 '#size' => !empty($elevalue['size']) ? $elevalue['size'] : 15,
-                '#maxlength' => !empty($elevalue['maxlength']) ? $elevalue['maxlength'] : 50,
+                '#maxlength' => !empty($elevalue['maxlength']) ? $elevalue['maxlength'] : 50,  
               );
 
               break;
@@ -470,11 +470,11 @@ function theme_webform_matrix($variables) {
   $component = $element['#webform_component'];
   $form_key = $component['form_key'];
   $pid = $component['pid'];
-
-
+  
+  
   $matrix_col = $component['extra']['matrix_col'];
   $matrix_row = $component['extra']['matrix_row'];
-
+  
   //Matrix rows and cols
   $headers=$element['#headers'];
   $rows = array();
@@ -488,10 +488,10 @@ function theme_webform_matrix($variables) {
   $form_class = str_replace('_', '-', $form_key);
 
   $output = "<div class='form-item webform-component webform-component-matrix webform-component--$form_class' id='webform-component-$form_class'>";
-
+  
   //Check if title_display checkbox is unchecked
   $output .= isset($element['#main_header']) ? "<label>" . $element['#main_header'] . "</label>" : "";
-
+  
   $output .= theme('table', array('header' => $headers, 'rows' => $rows));
   $output .= drupal_render_children($element);
   $output .= "</div>";
@@ -735,21 +735,16 @@ function _webform_csv_data_matrix($component, $export_options, $value) {
 
   if ($value[0]) {
     $value_array = _webform_matrix_component_array($value[0]);
-    $sub_elements = $component['extra']['element'];
-    $csv_array = array();
     if (empty($value_array)) {
-      //Populate $csv_array with empty data to push cells out
-      $count_elments = count($sub_elements);
-      for ($i=0; $i < $count_elments; $i++) {
-        $csv_array[] = '';
-      }
-      return $csv_array;
+        return array();
     }
+    $sub_elements = $component['extra']['element'];
 
     //Return managable display array
     $display_array =  _webform_display_array($sub_elements, $value_array);
 
     $reverse_array = _webform_matrix_component_array_reverse($display_array);
+    $csv_array = array();
     foreach ($reverse_array as $value) {
       $csv_array[] = implode(" - ", $value);
     }
