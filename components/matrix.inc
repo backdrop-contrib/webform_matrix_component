@@ -490,7 +490,7 @@ function theme_webform_matrix($variables) {
   $output = "<div class='form-item webform-component webform-component-matrix webform-component--$form_class' id='webform-component-$form_class'>";
   
   //Check if title_display checkbox is unchecked
-  $output .= isset($element['#main_header']) ? "<label>" . $element['#main_header'] . "<label>" : "";
+  $output .= isset($element['#main_header']) ? "<label>" . $element['#main_header'] . "</label>" : "";
   
   $output .= theme('table', array('header' => $headers, 'rows' => $rows));
   $output .= drupal_render_children($element);
