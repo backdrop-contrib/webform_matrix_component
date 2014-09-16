@@ -80,7 +80,6 @@ function webform_matrix_component_form_webform_admin_settings_alter(&$form, &$fo
   // Admin settings for webform_matrix_component
   // Can define rows/cols for matrix components
   // Default rows-10,cols-10.
-  module_load_include('inc', 'webform', 'components/number');
   $form['matrix_fieldset'] = array(
       '#type' => 'fieldset',
       '#title' => t('Matrix Component Settings'),
@@ -92,22 +91,14 @@ function webform_matrix_component_form_webform_admin_settings_alter(&$form, &$fo
       '#title' => t('Matrix Rows'),
       '#description' => t('Enter the max rows in matrix component'),
       '#default_value' => variable_get('webform_matrix_component_webform_matrix_rows', 10),
-      '#element_validate' => array('_webform_validate_number'),
-      '#integer' => TRUE,
-      '#min' => 1,
-      '#max' => 100,
-      '#step' => 1,
+      '#element_validate' => array('_webform_matrix_component_validate_number'),
   );
   $form['matrix_fieldset']['webform_matrix_component_webform_matrix_cols'] = array(
       '#type' => 'textfield',
       '#title' => t('Matrix Cols'),
       '#description' => t('Enter the max cols in matrix component'),
       '#default_value' => variable_get('webform_matrix_component_webform_matrix_cols', 10),
-      '#element_validate' => array('_webform_validate_number'),
-      '#integer' => TRUE,
-      '#min' => 1,
-      '#max' => 100,
-      '#step' => 1,
+      '#element_validate' => array('_webform_matrix_component_validate_number'),
   );
 }
 
@@ -279,8 +270,9 @@ function webform_matrix_component_form_alter(&$form, &$form_state, $form_id) {
         $element['#temp_max_row'] = $form_state[$formkey]['temp_matrix_rows'];
 
         if (isset($component['extra']['add_row_feature']) && $component['extra']['add_row_feature'] == 1) {
-          $element['add_row'] = array(
+          $element['add_row_' . $formkey] = array(
               '#type' => 'submit',
+              '#name' => 'add_row_' . $formkey,
               '#value' => isset($component['extra']['add_row_button_text']) ? $component['extra']['add_row_button_text'] : t('Add a row'),
               '#submit' => array('_webform_matrix_component_get_add_row_submit'),
               '#limit_validation_errors' => array(),
