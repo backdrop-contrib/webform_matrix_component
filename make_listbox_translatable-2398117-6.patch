@@ -1,0 +1,33 @@
+diff --git a/webform_matrix_component.module b/webform_matrix_component.module
+index 99468cc..78b0efe 100644
+--- a/webform_matrix_component.module
++++ b/webform_matrix_component.module
+@@ -335,12 +335,27 @@ function theme_webform_matrix_table($variables) {
+   $id = "edit-$form_key-$pid";
+   $matrix_col = $component['extra']['matrix_col'];
+   $matrix_row = $element['#temp_max_row']; //$component['extra']['matrix_row'];
++
+   $headers = $element['#headers'];
+-  $rows = array();
++  // make table headers translatable
++  foreach ($headers as $key => $header) {
++    $headers[$key] = t($header);
++  }
+ 
++  $rows = array();
+   for ($i = 1; $i <= $matrix_row; $i++) {
+     $cols = array();
+     for ($j = 1; $j <= $matrix_col; $j++) {
++      // make select options translatable
++      // this includes the default "Select" label
++      if ($element[$i][$j]['#type'] === 'select') {
++        // to translate just the "Select" label
++        // use the following line instead of the foreach loop 
++        // $element[$i][$j]['#options']['_none'] = t($element[$i][$j]['#options']['_none']);
++        foreach ($element[$i][$j]['#options'] as $key => $option) {
++          $element[$i][$j]['#options'][$key] = t('@option', array('@option' => $option));
++        }
++      }
+       $cols[] = drupal_render($element[$i][$j]);
+     }
+     $rows[] = $cols;
