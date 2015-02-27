@@ -286,14 +286,42 @@ function webform_matrix_component_form_alter(&$form, &$form_state, $form_id) {
           $element['#attached']['library'] = array(array('system', 'ui.datepicker'));
         }
 
-
-
-
-        $form['submitted'][$formkey] = $element;
-        $form['submitted'][$formkey]['#theme'][] = 'webform_matrix_table';
+        $parents = _webform_matrix_component_fieldset_parents($component['cid'], $form['submitted']);
+        $parents[] = $formkey;
+        drupal_array_set_nested_value($form['submitted'], $parents, $element);
+        $parents[] = '#theme';
+        drupal_array_set_nested_value($form['submitted'], $parents, array('webform_matrix_table'));
       }
     }
   }
+}
+
+/**
+ * Searchs for the parents of the component, in case it's under fieldsets.
+ * Returns an array with the fieldsets under the component is nested.
+ * @param type $cid. Component ID
+ * @param type $submitted. The webform elements
+ * @param type $parents
+ * @param boolean $found
+ * @return type array.
+ */
+function _webform_matrix_component_fieldset_parents($cid, $submitted, &$parents = array(), &$found = FALSE) {
+
+  foreach (element_children($submitted) as $component_name) {
+    if ($submitted[$component_name]['#webform_component']['type'] == 'fieldset') {
+      // Check if the matrix is a direct child of this fieldset:
+      $parents[] = $component_name;
+      _webform_matrix_component_fieldset_parents($cid, $submitted[$component_name], $parents, $found);
+      if ($found) {
+        return $parents;
+      }
+    }
+    elseif ($submitted[$component_name]['#webform_component']['cid'] == $cid) {
+      $found = TRUE;
+      return $parents;
+    }
+  }
+  array_pop($parents);
 }
 
 /**
@@ -335,7 +363,9 @@ function theme_webform_matrix_table($variables) {
  * @see _webform_matrix_component_get_add_row()
  */
 function _webform_matrix_component_get_add_row_submit($form, &$form_state) {
-  $form_key = $form_state['triggering_element']['#parents'][1];
+  // The matrix is the previous to last element on the #parents array:
+  end($form_state['triggering_element']['#parents']);
+  $form_key = prev($form_state['triggering_element']['#parents']);
   $form_state[$form_key]['temp_matrix_rows'] ++;
   $form_state['rebuild'] = TRUE;
 }
@@ -348,6 +378,7 @@ function _webform_matrix_component_get_add_row_submit($form, &$form_state) {
  * @see _webform_matrix_component_get_add_row_submit()
  */
 function _webform_matrix_component_get_add_row($form, &$form_state) {
-  $form_key = $form_state['triggering_element']['#parents'][1];
-  return $form['submitted'][$form_key];
+  $parents = $form_state['triggering_element']['#parents'];
+  array_pop($parents);
+  return drupal_array_get_nested_value($form, $parents);
 }
