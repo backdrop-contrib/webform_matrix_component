@@ -200,7 +200,7 @@ function webform_matrix_component_form_alter(&$form, &$form_state, $form_id) {
                             '#default_value' => $editvalue[$prow][$i],
                             '#required' => $required,
                             '#title_display' => $title_display,
-                            '#empty_option' => 'Select',
+                            '#empty_option' => t('Select'),
                             '#empty_value' => '_none',
                         );
                         if ($is_multiple) {
