@@ -110,13 +110,34 @@ function webform_matrix_component_form_alter(&$form, &$form_state, $form_id) {
     module_load_include('inc', 'webform', '/components/date');
 
     foreach ($form['#node']->webform['components'] as $cid => $component) {
-      if ($component['type'] == 'matrix') {
+      if ($component['type'] == 'matrix' && isset($form['submitted'][$component['form_key']])) {
         $nid = $component['nid'];
-        $submission = !empty($form_state['build_info']['args'][1]) ? $form_state['build_info']['args'][1] : NULL;
+        $value = array();
+
+        // If in a multi-step form, a submission ID may be specified in form state.
+        // Load this submission. This allows anonymous users to use auto-save.
         if (empty($submission) && !empty($form_state['values']['details']['sid'])) {
           $submission = webform_get_submission($nid, $form_state['values']['details']['sid']);
+          if (!empty($submission->data[$cid])) {
+            $value = $submission->data[$cid];
+          }
         }
-        $value = isset($submission->data[$cid]) ? $submission->data[$cid] : NULL;
+
+        // Form state storage override any default submission information.
+        if (isset($form_state['storage']['submitted'][$cid])) {
+          $value = $form_state['storage']['submitted'][$cid];
+        }
+
+        // Form state values override any default submission information.
+        if (isset($form_state['values']['submitted'][$cid])) {
+          $value = $form_state['values']['submitted'][$cid];
+        }
+
+        // Convert the value structure to always be an array, matching
+        // $submission->data.
+        if (!is_array($value)) {
+          $value = array($value);
+        }
 
         $formkey = $component['form_key'];
         $pid = $component['pid'];
@@ -127,7 +148,13 @@ function webform_matrix_component_form_alter(&$form, &$form_state, $form_id) {
 
         $datepicker = FALSE;
         if (isset($component['extra']['matrix_col'])) {
-          $editvalue = unserialize($value[0]);
+
+          $editvalue = NULL;
+
+          if (!empty($value[0])) {
+            $editvalue = unserialize($value[0]);
+          }
+
           $matrix_col = $component['extra']['matrix_col'];
           $matrix_row = !empty($editvalue) ? count($editvalue) : $component['extra']['matrix_row'];
 
