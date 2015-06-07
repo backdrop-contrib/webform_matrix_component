@@ -671,7 +671,7 @@ function _webform_display_array($sub_elements, $value_array, &$headers = array()
               $display_array[$key][$col] = implode(',', $select_values_options);
             }
             else {
-              $display_array[$key][$col] = '_none';
+              $display_array[$key][$col] = '';
             }
           }
           else {
@@ -685,7 +685,7 @@ function _webform_display_array($sub_elements, $value_array, &$headers = array()
           }
         }
         else {
-          $display_array[$key][$col] = '_none';
+          $display_array[$key][$col] = '';
         }
       }
     }

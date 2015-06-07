@@ -228,7 +228,7 @@ function webform_matrix_component_form_alter(&$form, &$form_state, $form_id) {
                             '#required' => $required,
                             '#title_display' => $title_display,
                             '#empty_option' => t('Select'),
-                            '#empty_value' => '_none',
+                            '#empty_value' => '',
                         );
                         if ($is_multiple) {
                           $element[$prow][$i]['#multiple'] = TRUE;
@@ -378,7 +378,7 @@ function theme_webform_matrix_table($variables) {
       if ($element[$i][$j]['#type'] === 'select') {
         // To translate just the "Select" label
         // use the following line instead of the foreach loop
-        // $element[$i][$j]['#options']['_none'] = t($element[$i][$j]['#options']['_none']);
+        // $element[$i][$j]['#options'][''] = t($element[$i][$j]['#options']['']);
         foreach ($element[$i][$j]['#options'] as $key => $option) {
           $element[$i][$j]['#options'][$key] = t('@option', array('@option' => $option));
         }
