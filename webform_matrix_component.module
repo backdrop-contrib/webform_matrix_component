@@ -110,7 +110,7 @@ function webform_matrix_component_form_alter(&$form, &$form_state, $form_id) {
     module_load_include('inc', 'webform', '/components/date');
 
     foreach ($form['#node']->webform['components'] as $cid => $component) {
-      if ($component['type'] == 'matrix' && isset($form['submitted'][$component['form_key']])) {
+      if ($component['type'] == 'matrix' && $form['details']['page_num']['#value'] == $component['page_num']) {
         $nid = $component['nid'];
         $value = array();
 
