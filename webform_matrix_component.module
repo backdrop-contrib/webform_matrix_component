@@ -277,15 +277,34 @@ function webform_matrix_component_form_alter(&$form, &$form_state, $form_id) {
                     break;
 
                   case 'label':
-                    $label_name = $elevalue['label_name'];
-                    $element[$prow][$i] = array(
+                    // Label markup can be different on each row so we neeed to loop through each label.
+                    foreach($elevalue['label_name'] as $delta => $label_element) {
+                      $element[$prow][$i][$delta] = array(
                         '#type' => 'item',
                         '#title' => check_plain($title),
-                        '#markup' => _webform_filter_xss($label_name),
+                        '#markup' => webform_filter_xss($label_element),
                         '#attributes' => array('class' => array('form-item')),
                         '#default_value' => $editvalue[$prow][$i],
                         '#title_display' => $title_display,
-                    );
+                      );
+                      $element[$prow][$i]['#webform_matrix_component_labels'] = TRUE;
+                    }
+                    // Determine whether add row button has been clicked.
+                    if(isset($form_state['triggering_element']['#parents']) && strstr(end($form_state['triggering_element']['#parents']), 'add_row')) {
+                      // Determine how many rows have been added.
+                      $added_rows = $form_state[$formkey]['temp_matrix_rows'] - count($elevalue['label_name']);
+
+                      for($added_row = 0; $added_row < $added_rows; $added_row++) {
+                        // Add an additional label for each dynamically added row using the header as the value.
+                        $element[$prow][$i][] = array(
+                          '#type' => 'item',
+                          '#title' => check_plain($title),
+                          '#markup' => check_plain($title),
+                          '#attributes' => array('class' => array('form-item')),
+                          '#title_display' => $title_display,
+                        );
+                      }
+                    }
                     break;
                 }
                 drupal_alter('webform_render_matrix', $component, $elevalue, $element[$prow][$i]);
@@ -375,7 +394,7 @@ function theme_webform_matrix_table($variables) {
     for ($j = 1; $j <= $matrix_col; $j++) {
       // Make select options translatable
       // this includes the default "Select" label
-      if ($element[$i][$j]['#type'] === 'select') {
+      if (isset($element[$i][$j]['#type']) && $element[$i][$j]['#type'] === 'select') {
         // To translate just the "Select" label
         // use the following line instead of the foreach loop
         // $element[$i][$j]['#options'][''] = t($element[$i][$j]['#options']['']);
@@ -383,7 +402,14 @@ function theme_webform_matrix_table($variables) {
           $element[$i][$j]['#options'][$key] = t('@option', array('@option' => $option));
         }
       }
-      $cols[] = drupal_render($element[$i][$j]);
+      // If element type is label then extract the correct label for the current row.
+      if(isset($element[$i][$j]['#webform_matrix_component_labels']) && $element[$i][$j]['#webform_matrix_component_labels'] == TRUE) {
+        $cols[] = drupal_render($element[$i][$j][$i]);
+      }
+      else {
+        // All other elements types.
+        $cols[] = drupal_render($element[$i][$j]);
+      }
     }
     $rows[] = $cols;
   }
@@ -393,7 +419,11 @@ function theme_webform_matrix_table($variables) {
   $output = "<div class='form-item webform-component webform-component-matrix webform-component--$form_class webform-component-$form_class' id='$id'>";
   $output .=!empty($element['#matrix_header']) ? "<label>" . $element['#matrix_header'] . "</label>" : "";
   $output .= theme('table', array('header' => $headers, 'rows' => $rows, 'attributes' => array('id' => array("$id-table"))));
-  $output .= drupal_render_children($element);
+
+  // Render the 'add row' button.  Add row button id is in format add_row_formId.
+  $add_row_id = 'add_row_' . $element['#webform_component']['form_key'];
+  $output .= drupal_render_children($element, array($add_row_id));
+
   $output .= "</div>";
   return $output;
 }

@@ -101,6 +101,12 @@ function _webform_matrix_component_get_column_form($form, $form_state, $componen
 
 
   $max_cols = variable_get('webform_matrix_component_webform_matrix_cols', 10);
+
+  $num_rows = isset($component['extra']['matrix_row']) ? $component['extra']['matrix_row'] : 1;
+  if(isset($form_state['values']['extra']['matrix_row'])) {
+    $num_rows = $form_state['values']['extra']['matrix_row'];
+  }
+
   $form['#attached']['css'][] = drupal_get_path('module', 'webform_matrix_component') . '/webform_matrix_component.css';
   $form['extra']['matrix_col'] = array(
       '#type' => 'select',
@@ -248,15 +254,16 @@ function _webform_matrix_component_get_column_form($form, $form_state, $componen
         break;
 
       case 'label':
-        $label_name = @$elementvalue['label_name'];
-        $form['extra']['element'][$element_id]['label_name'] = array(
+        for($row_num = 1; $row_num <= $num_rows; $row_num++) {
+          $label_name = @$elementvalue['label_name'][$row_num];
+          $form['extra']['element'][$element_id]['label_name'][$row_num] = array(
             '#type' => 'textfield',
-            '#title' => t('Label Name'),
+            '#title' => t('Label Name') . " $row_num",
             '#default_value' => $label_name,
             '#size' => 15,
-            '#required' => TRUE,
-            '#parents' => array('extra', 'element', $element_id, 'label_name'),
-        );
+            '#parents' => array('extra', 'element', $element_id, 'label_name', $row_num),
+          );
+        }
         break;
 
       case 'date':
@@ -701,11 +708,11 @@ function _webform_display_array($sub_elements, $value_array, &$headers = array()
         }
       }
     }
-    else {
-      foreach ($value_array as $key => $value_row) {
-        $display_array[$key][$col] = $sub_element['label_name'];
-      }
-    }
+    elseif ($sub_element['type'] == 'label') {
+       foreach ($value_array as $key => $value_row) {
+         $display_array[$key][$col] = $sub_element['label_name'][$key];
+       }
+     }
     $col++;
   }
 
