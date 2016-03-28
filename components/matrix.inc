@@ -73,6 +73,15 @@ function _webform_edit_matrix($component) {
       '#parents' => array('extra', 'add_row_feature'),
       '#return_value' => 1,
   );
+  
+  $form['extra']['remove_row_feature'] = array(
+      '#type' => 'checkbox',
+      '#title' => t('Remove row feature'),
+      '#default_value' => isset($component['extra']['remove_row_feature']) ? $component['extra']['remove_row_feature'] : 0,
+      '#weight' => 1,
+      '#parents' => array('extra', 'remove_row_feature'),
+      '#return_value' => 1,
+  );
 
   $form['extra']['add_row_button_text'] = array(
       '#type' => 'textfield',
@@ -85,6 +94,21 @@ function _webform_edit_matrix($component) {
           // Hide the settings when the cancel notify checkbox is disabled.
           'invisible' => array(
               ':input[name="extra[add_row_feature]"]' => array('checked' => FALSE),
+          ),
+      ),
+  );
+  
+  $form['extra']['remove_row_button_text'] = array(
+      '#type' => 'textfield',
+      '#title' => t('Remove row button text'),
+      '#default_value' => isset($component['extra']['remove_row_button_text']) ? $component['extra']['remove_row_button_text'] : t('Remove a row'),
+      '#weight' => 2,
+      '#parents' => array('extra', 'remove_row_button_text'),
+      '#required' => 1,
+      '#states' => array(
+          // Hide the settings when the cancel notify checkbox is disabled.
+          'invisible' => array(
+              ':input[name="extra[remove_row_feature]"]' => array('checked' => FALSE),
           ),
       ),
   );

@@ -328,6 +328,21 @@ function webform_matrix_component_form_alter(&$form, &$form_state, $form_id) {
               ),
           );
         }
+        
+        if (isset($component['extra']['remove_row_feature']) && $component['extra']['remove_row_feature'] == 1) {
+          $element['remove_row_' . $formkey] = array(
+              '#type' => 'submit',
+              '#name' => 'remove_row_' . $formkey,
+              '#value' => isset($component['extra']['remove_row_button_text']) ? $component['extra']['remove_row_button_text'] : t('Remove a row'),
+              '#submit' => array('_webform_matrix_component_get_remove_row_submit'),
+              '#limit_validation_errors' => array(),
+              '#ajax' => array(
+                  'callback' => '_webform_matrix_component_get_remove_row',
+                  'wrapper' => "edit-$formkey-$pid",
+              ),
+          );
+        }
+        
         if ($datepicker) {
           $element['#attached']['library'] = array(array('system', 'ui.datepicker'));
         }
@@ -422,7 +437,9 @@ function theme_webform_matrix_table($variables) {
 
   // Render the 'add row' button.  Add row button id is in format add_row_formId.
   $add_row_id = 'add_row_' . $element['#webform_component']['form_key'];
+  $remove_row_id = 'remove_row_' . $element['#webform_component']['form_key'];
   $output .= drupal_render_children($element, array($add_row_id));
+  $output .= drupal_render_children($element, array($remove_row_id));
 
   $output .= "</div>";
   return $output;
@@ -450,6 +467,35 @@ function _webform_matrix_component_get_add_row_submit($form, &$form_state) {
  * @see _webform_matrix_component_get_add_row_submit()
  */
 function _webform_matrix_component_get_add_row($form, &$form_state) {
+  $parents = $form_state['triggering_element']['#parents'];
+  array_pop($parents);
+  return drupal_array_get_nested_value($form, $parents);
+}
+
+/**
+ * Add new row into existing matrix component.
+ *
+ * @see webform_matrix_component_form_alter()
+ * @see _webform_matrix_component_get_add_row()
+ */
+function _webform_matrix_component_get_remove_row_submit($form, &$form_state) {
+  // The matrix is the previous to last element on the #parents array:
+  end($form_state['triggering_element']['#parents']);
+  $form_key = prev($form_state['triggering_element']['#parents']);
+  if($form_state[$form_key]['temp_matrix_rows']>1){
+    $form_state[$form_key]['temp_matrix_rows'] --;
+  }
+  $form_state['rebuild'] = TRUE;
+}
+
+
+/**
+ * # ajax callback.
+ *
+ * @see webform_matrix_component_form_alter()
+ * @see _webform_matrix_component_get_add_row_submit()
+ */
+function _webform_matrix_component_get_remove_row($form, &$form_state) {
   $parents = $form_state['triggering_element']['#parents'];
   array_pop($parents);
   return drupal_array_get_nested_value($form, $parents);
