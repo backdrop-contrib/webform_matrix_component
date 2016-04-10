@@ -627,7 +627,7 @@ function _webform_csv_data_matrix($component, $export_options, $value) {
   if ($value[0]) {
     $value_array = _webform_matrix_component_array($value[0]);
     if (empty($value_array)) {
-      return array();
+      return array_fill(0, $size, "");
     }
     $sub_elements = $component['extra']['element'];
 
@@ -642,7 +642,7 @@ function _webform_csv_data_matrix($component, $export_options, $value) {
     return $csv_array;
   }
   else {
-    return '';
+    return array_fill(0, $size, "");
   }
 }
 
