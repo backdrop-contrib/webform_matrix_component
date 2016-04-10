@@ -390,13 +390,14 @@ function _webform_matrix_component_fieldset_parents($cid, $submitted, &$parents 
  */
 function theme_webform_matrix_table($variables) {
   $element = $variables['element'];
+ 
   $component = $element['#webform_component'];
   $form_key = $component['form_key'];
   $pid = $component['pid'];
   $id = "edit-$form_key-$pid";
   $matrix_col = $component['extra']['matrix_col'];
   $matrix_row = $element['#temp_max_row']; //$component['extra']['matrix_row'];
-
+ 
   $headers = $element['#headers'];
   // Make table headers translatable
   foreach ($headers as $key => $header) {
@@ -433,14 +434,17 @@ function theme_webform_matrix_table($variables) {
   $form_class = str_replace('_', '-', $form_key);
   $output = "<div class='form-item webform-component webform-component-matrix webform-component--$form_class webform-component-$form_class' id='$id'>";
   $output .=!empty($element['#matrix_header']) ? "<label>" . $element['#matrix_header'] . "</label>" : "";
+  $output .= !empty($component['extra']['description']) ? '<div>' . $component['extra']['description'] . "</div>" : "";
   $output .= theme('table', array('header' => $headers, 'rows' => $rows, 'attributes' => array('id' => array("$id-table"))));
-
+  
+  
   // Render the 'add row' button.  Add row button id is in format add_row_formId.
   $add_row_id = 'add_row_' . $element['#webform_component']['form_key'];
   $remove_row_id = 'remove_row_' . $element['#webform_component']['form_key'];
   $output .= drupal_render_children($element, array($add_row_id));
   $output .= drupal_render_children($element, array($remove_row_id));
 
+  
   $output .= "</div>";
   return $output;
 }
