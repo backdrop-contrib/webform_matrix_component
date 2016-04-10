@@ -116,35 +116,23 @@ function webform_matrix_component_form_alter(&$form, &$form_state, $form_id) {
 
         // If in a multi-step form, a submission ID may be specified in form state.
         // Load this submission. This allows anonymous users to use auto-save.
-        if (empty($submission) && !empty($form_state['values']['details']['sid'])) {
-          $submission = webform_get_submission($nid, $form_state['values']['details']['sid']);
+        if (empty($submission) && !empty($form_state['build_info']['args'][1]->sid)) {
+          $submission = webform_get_submission($nid, $form_state['build_info']['args'][1]->sid);
           if (!empty($submission->data[$cid])) {
             $value = $submission->data[$cid];
           }
         }
 
-        // Form state storage override any default submission information.
-        if (isset($form_state['storage']['submitted'][$cid])) {
-          $value = $form_state['storage']['submitted'][$cid];
-        }
-
-        // Form state values override any default submission information.
-        if (isset($form_state['values']['submitted'][$cid])) {
-          $value = $form_state['values']['submitted'][$cid];
-        }
-
-        // Convert the value structure to always be an array, matching
-        // $submission->data.
-        if (!is_array($value)) {
-          $value = array($value);
-        }
-
         $formkey = $component['form_key'];
         $pid = $component['pid'];
-        $element = array();
-        $element['#weight'] = $component['weight'];
-        $element['#webform_component'] = $component;
+        
+        $parents = webform_component_parent_keys($form['#node'], $component);
+        $element = drupal_array_get_nested_value($form['submitted'], $parents);
         $element['#attached']['css'][] = drupal_get_path('module', 'webform_matrix_component') . '/webform_matrix_component.css';
+
+		if (empty($value) && isset($element['#component_value'])) {
+          $value = $element['#component_value'];
+        }
 
         $datepicker = FALSE;
         if (isset($component['extra']['matrix_col'])) {
@@ -153,6 +141,18 @@ function webform_matrix_component_form_alter(&$form, &$form_state, $form_id) {
 
           if (!empty($value[0])) {
             $editvalue = unserialize($value[0]);
+            foreach (array_keys($editvalue) as $key) {
+              $empty = TRUE;
+              for ($i = 1; $i <= $component['extra']['matrix_col']; $i++) {
+                if (!empty($editvalue[$key][$i])) {
+                  $empty = FALSE;
+                  break;
+                }
+              }
+              if ($empty) {
+                unset($editvalue[$key]);
+              }
+            }
           }
 
           $matrix_col = $component['extra']['matrix_col'];

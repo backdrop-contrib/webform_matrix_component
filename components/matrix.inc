@@ -353,6 +353,7 @@ function _webform_render_matrix($component, $value = NULL, $filter = TRUE) {
   $element = array();
   $element['#weight'] = $component['weight'];
   $element['#webform_component'] = $component;
+  $element['#component_value'] = $value;
   if ($component['extra']['title_display'] != 0) {
     $element['value'] = array(
         '#markup' => "<label>" . _webform_filter_xss($component['name']) . "</label>",
