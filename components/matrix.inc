@@ -55,7 +55,7 @@ function _webform_theme_matrix() {
 function _webform_edit_matrix($component) {
 
   $form = array();
-  $max_rows = variable_get('webform_matrix_component_webform_matrix_rows', 10);
+  $max_rows = variable_get('webform_matrix_component_webform_matrix_rows', 30);
   $form['extra']['matrix_row'] = array(
       '#type' => 'select',
       '#title' => t('Matrix Rows'),
@@ -637,7 +637,7 @@ function _webform_csv_data_matrix($component, $export_options, $value) {
     $reverse_array = _webform_matrix_component_array_reverse($display_array);
     $csv_array = array();
     foreach ($reverse_array as $value) {
-      $csv_array[] = implode(" - ", $value);
+      $csv_array[] = implode(" - ", empty($value)?"NA":$value);
     }
     return $csv_array;
   }
