@@ -175,7 +175,7 @@ function _webform_matrix_component_get_column_form($form, $form_state, $componen
       $is_datepicker = @$elementvalue['datepicker'];
     }
 
-    $td = "<td id='$element_id'>";
+    $td = "<td id='$element_id' style='vertical-align:top'>";
     $prefix = ($i == 1) ? "<table id='matrix-options'><tbody><tr>" . $td : $td;
     $suffix = ($matrix_col == $i) ? "</td></tr></tbody></table>" : "</td>";
 
@@ -412,8 +412,14 @@ function theme_webform_date_matrix($variables) {
  * Implements _webform_submit_component().
  */
 function _webform_submit_matrix($component, $value) {
-  if (isset($value['add_row'])) {
-    unset($value['add_row']);
+   
+    
+   $form_key = $component['form_key'];
+  if (isset($value['add_row_'.$form_key])) {
+    unset($value['add_row_'.$form_key]);
+  }
+  if (isset($value['remove_row_'.$form_key])) {
+    unset($value['remove_row_'.$form_key]);
   }
   return serialize($value);
 }
