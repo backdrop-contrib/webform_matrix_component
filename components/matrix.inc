@@ -312,11 +312,11 @@ function _webform_matrix_component_get_column_form($form, $form_state, $componen
       case 'date':
         $form['extra']['element'][$element_id]['datepicker'] = array(
             '#type' => 'checkbox',
-            '#title' => t('Calender'),
+            '#title' => t('Calendar'),
             '#default_value' => $is_datepicker,
             '#parents' => array('extra', 'element', $element_id, 'datepicker'),
             '#return_value' => 1,
-            '#description' => t('Default date type or calender one type element will show only.'),
+            '#description' => t('Default date type or calendar one type element will show only.'),
         );
 
         $start_date = @$elementvalue['startdate'];
