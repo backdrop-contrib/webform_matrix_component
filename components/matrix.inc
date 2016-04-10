@@ -227,6 +227,15 @@ function _webform_matrix_component_get_column_form($form, $form_state, $componen
             '#parents' => array('extra', 'element', $element_id, 'size'),
             '#element_validate' => array('_webform_matrix_component_validate_number'),
         );
+        
+        $default_value = !empty($elementvalue['default_value']) ? $elementvalue['default_value'] : "";
+        $form['extra']['element'][$element_id]['default_value'] = array(
+            '#type' => 'textfield',
+            '#title' => t('Default Value'),
+            '#default_value' => $default_value,
+            '#size' => 15,
+            '#parents' => array('extra', 'element', $element_id, 'default_value'),
+        );
 
         $maxlength = !empty($elementvalue['maxlength']) ? $elementvalue['maxlength'] : 50;
         $form['extra']['element'][$element_id]['maxlength'] = array(
@@ -274,6 +283,16 @@ function _webform_matrix_component_get_column_form($form, $form_state, $componen
             '#default_value' => $is_multiple,
             '#parents' => array('extra', 'element', $element_id, 'multiple'),
             '#return_value' => 1,
+        );
+        
+        $default_value = !empty($elementvalue['default_value']) ? $elementvalue['default_value'] : "";
+        $form['extra']['element'][$element_id]['default_value'] = array(
+            '#type' => 'textfield',
+            '#title' => t('Default Value'),
+            '#default_value' => $default_value,
+            '#size' => 15,
+            '#parents' => array('extra', 'element', $element_id, 'default_value'),
+            '#description' => t("Enter key"),
         );
         break;
 

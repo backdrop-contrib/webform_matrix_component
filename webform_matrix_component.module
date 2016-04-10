@@ -200,7 +200,7 @@ function webform_matrix_component_form_alter(&$form, &$form_state, $form_id) {
                       '#title' => check_plain($title),
                       '#size' => !empty($elevalue['size']) ? $elevalue['size'] : 15,
                       '#maxlength' => !empty($elevalue['maxlength']) ? $elevalue['maxlength'] : 50,
-                      '#default_value' => isset($editvalue[$prow][$i]) ? $editvalue[$prow][$i] : "",
+                      '#default_value' => isset($editvalue[$prow][$i]) ? $editvalue[$prow][$i] : $elevalue['default_value'],
                       '#required' => $required,
                       '#title_display' => $title_display,
                     );
@@ -224,11 +224,11 @@ function webform_matrix_component_form_alter(&$form, &$form_state, $form_id) {
                             '#type' => 'select',
                             '#title' => check_plain($title),
                             '#options' => $option_array,
-                            '#default_value' => $editvalue[$prow][$i],
                             '#required' => $required,
                             '#title_display' => $title_display,
                             '#empty_option' => t('Select'),
                             '#empty_value' => '',
+                            '#default_value' => isset($editvalue[$prow][$i]) ? $editvalue[$prow][$i] : $elevalue['default_value'],
                         );
                         if ($is_multiple) {
                           $element[$prow][$i]['#multiple'] = TRUE;
