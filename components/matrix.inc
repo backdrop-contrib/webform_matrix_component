@@ -195,6 +195,7 @@ function _webform_matrix_component_get_column_form($form, $form_state, $componen
         ),
     );
 
+    $matrix_title_requied = variable_get("webform_matrix_component_webform_matrix_title_required",1);
     $form['extra']['element'][$element_id]['title'] = array(
         '#type' => 'textfield',
         '#title' => t('Title'),
@@ -202,7 +203,7 @@ function _webform_matrix_component_get_column_form($form, $form_state, $componen
         '#default_value' => $element_title,
         '#parents' => array('extra', 'element', $element_id, 'title'),
         '#id' => "edit-extra-element-$element_id-title",
-        '#required' => TRUE,
+        '#required' => $matrix_title_requied,
     );
 
     $form['extra']['element'][$element_id]['mandatory'] = array(

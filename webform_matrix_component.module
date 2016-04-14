@@ -90,7 +90,7 @@ function webform_matrix_component_form_webform_admin_settings_alter(&$form, &$fo
       '#type' => 'textfield',
       '#title' => t('Matrix Rows'),
       '#description' => t('Enter the max rows in matrix component'),
-      '#default_value' => variable_get('webform_matrix_component_webform_matrix_rows', 10),
+      '#default_value' => variable_get('webform_matrix_component_webform_matrix_rows', 20),
       '#element_validate' => array('_webform_matrix_component_validate_number'),
   );
   $form['matrix_fieldset']['webform_matrix_component_webform_matrix_cols'] = array(
@@ -99,6 +99,13 @@ function webform_matrix_component_form_webform_admin_settings_alter(&$form, &$fo
       '#description' => t('Enter the max cols in matrix component'),
       '#default_value' => variable_get('webform_matrix_component_webform_matrix_cols', 10),
       '#element_validate' => array('_webform_matrix_component_validate_number'),
+  );
+  $form['matrix_fieldset']['webform_matrix_component_webform_matrix_title_required'] = array(
+      '#type' => 'checkbox',
+      '#title' => t('Is Matrix Title Required'),
+      '#return_value' => 1,
+      '#description' => t('Make Matrix title required or not'),
+      '#default_value' => variable_get('webform_matrix_component_webform_matrix_title_required', 1),
   );
 }
 
@@ -268,9 +275,9 @@ function webform_matrix_component_form_alter(&$form, &$form_state, $form_id) {
                         '#year_textfield' => 0,
                         '#default_value' => !empty($editvalue[$prow][$i]) ? $editvalue[$prow][$i] : $elevalue['default_date'],
                         '#timezone' => 'user',
-                        '#process' => array('webform_expand_date'),
+                        //'#process' => array('webform_expand_date'),
                         '#theme' => 'webform_date_matrix',
-                        '#theme_wrappers' => array('webform_element'),
+                        //'#theme_wrappers' => array('webform_element'),
                         '#element_validate' => array('webform_validate_date'),
                         '#datepicker' => $datepicker,
                     );
