@@ -170,10 +170,16 @@ function webform_matrix_component_form_alter(&$form, &$form_state, $form_id) {
           }
 
           if ($component['extra']['title_display'] !== 'none') {
-            $element['#matrix_header'] = _webform_filter_xss($component['name']);
+            //$element['#matrix_header'] = _webform_filter_xss($component['name']);
+              $element['#matrix_header'] = $element['#title'];
           }
 
           for ($prow = 1; $prow <= $form_state[$formkey]['temp_matrix_rows']; $prow++) {
+              
+            if(isset($form_state[$formkey]['remove_line'])){
+                if($form_state[$formkey]['remove_line'] == $prow)
+                    continue;
+            }  
             if (isset($component['extra']['element'])) {
 
               $headers = array();
@@ -202,6 +208,7 @@ function webform_matrix_component_form_alter(&$form, &$form_state, $form_id) {
                 switch ($eletype) {
 
                   case 'textfield':
+                    $elevalue['default_value'] = isset($elevalue['default_value'])?$elevalue['default_value']:"";
                     $element[$prow][$i] = array(
                       '#type' => 'textfield',
                       '#title' => check_plain($title),
@@ -317,6 +324,20 @@ function webform_matrix_component_form_alter(&$form, &$form_state, $form_id) {
                 drupal_alter('webform_render_matrix', $component, $elevalue, $element[$prow][$i]);
               }
             }
+            
+            if (isset($component['extra']['remove_row_feature']) && $component['extra']['remove_row_feature'] == 2) {
+                $element['remove_row_line_' . $formkey."_".$prow] = array(
+                  '#type' => 'submit',
+                  '#name' => 'remove_row_line' . $formkey."_".$prow,
+                  '#value' => isset($component['extra']['remove_row_button_text']) ? $component['extra']['remove_row_button_text'] : t('Remove a row'),
+                  '#submit' => array('_webform_matrix_component_get_remove_row_line_submit'),
+                  '#limit_validation_errors' => array(),
+                  '#ajax' => array(
+                      'callback' => '_webform_matrix_component_get_remove_row_line',
+                      'wrapper' => "edit-$formkey-$pid",
+                  ),
+              );
+            }
           }
         }
         $element['#headers'] = $headers;
@@ -404,7 +425,7 @@ function theme_webform_matrix_table($variables) {
   $id = "edit-$form_key-$pid";
   $matrix_col = $component['extra']['matrix_col'];
   $matrix_row = $element['#temp_max_row']; //$component['extra']['matrix_row'];
- 
+  //'remove_row_line' . $formkey."_".$prow
   $headers = $element['#headers'];
   // Make table headers translatable
   foreach ($headers as $key => $header) {
@@ -412,6 +433,7 @@ function theme_webform_matrix_table($variables) {
   }
 
   $rows = array();
+  $is_remove_line = false;
   for ($i = 1; $i <= $matrix_row; $i++) {
     $cols = array();
     for ($j = 1; $j <= $matrix_col; $j++) {
@@ -434,9 +456,16 @@ function theme_webform_matrix_table($variables) {
         $cols[] = drupal_render($element[$i][$j]);
       }
     }
+    if(isset($element['remove_row_line_' . $element['#webform_component']['form_key']."_".$i])){
+        $cols[] = drupal_render($element['remove_row_line_' . $element['#webform_component']['form_key']."_".$i]);
+        $is_remove_line = true;
+    }
     $rows[] = $cols;
   }
 
+  if($is_remove_line){
+      $headers[] = 'Remove action';
+  }
   $rows[] = array(array('data' => drupal_render($element['add_row']), 'colspan' => $matrix_col));
   $form_class = str_replace('_', '-', $form_key);
   $output = "<div class='form-item webform-component webform-component-matrix webform-component--$form_class webform-component-$form_class' id='$id'>";
@@ -449,7 +478,7 @@ function theme_webform_matrix_table($variables) {
   $output .= drupal_render_children($element, array($add_row_id));
   $output .= drupal_render_children($element, array($remove_row_id));
 
-  $output .= !empty($component['extra']['description']) ? '<div>' . $component['extra']['description'] . "</div>" : "";
+  $output .= !empty($element['#description']) ? '<div>' . $element['#description'] . "</div>" : "";
   $output .= "</div>";
   return $output;
 }
@@ -493,8 +522,11 @@ function _webform_matrix_component_get_remove_row_submit($form, &$form_state) {
   $form_key = prev($form_state['triggering_element']['#parents']);
   if($form_state[$form_key]['temp_matrix_rows']>1){
     $form_state[$form_key]['temp_matrix_rows'] --;
+    $form_state['rebuild'] = TRUE;
+  }else{
+      form_set_error($form_key, 'This is last row cannot delete.');
   }
-  $form_state['rebuild'] = TRUE;
+  
 }
 
 
@@ -506,6 +538,31 @@ function _webform_matrix_component_get_remove_row_submit($form, &$form_state) {
  */
 function _webform_matrix_component_get_remove_row($form, &$form_state) {
   $parents = $form_state['triggering_element']['#parents'];
+  array_pop($parents);
+  return drupal_array_get_nested_value($form, $parents);
+}
+
+function _webform_matrix_component_get_remove_row_line_submit($form, &$form_state){
+  // The matrix is the previous to last element on the #parents array:
+  end($form_state['triggering_element']['#parents']);
+  $form_key = prev($form_state['triggering_element']['#parents']);
+  //pre($form_state[$form_key]); die;
+  $triggering_row =  $form_state['input']['_triggering_element_name'];
+  if($form_state[$form_key]['temp_matrix_rows']>1){
+    $remove_line_array = explode("_", $triggering_row);
+
+    $size_array  = count($remove_line_array); 
+    $remove_line =  $remove_line_array[$size_array-1];
+    $form_state[$form_key]['remove_line'] = $remove_line;
+
+    $form_state['rebuild'] = TRUE;
+  }else{
+      form_set_error($form_key, 'This is last row cannot delete.');
+  }
+}
+
+function _webform_matrix_component_get_remove_row_line($form, &$form_state){
+    $parents = $form_state['triggering_element']['#parents'];
   array_pop($parents);
   return drupal_array_get_nested_value($form, $parents);
 }

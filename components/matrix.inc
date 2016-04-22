@@ -75,12 +75,13 @@ function _webform_edit_matrix($component) {
   );
   
   $form['extra']['remove_row_feature'] = array(
-      '#type' => 'checkbox',
+      '#type' => 'radios',
       '#title' => t('Remove row feature'),
       '#default_value' => isset($component['extra']['remove_row_feature']) ? $component['extra']['remove_row_feature'] : 0,
       '#weight' => 1,
       '#parents' => array('extra', 'remove_row_feature'),
-      '#return_value' => 1,
+      '#options' => array(1 => "Per Matrix single button",2=>"Row wise delete button",0=> "Not Required"),
+      
   );
 
   $form['extra']['add_row_button_text'] = array(
@@ -108,7 +109,7 @@ function _webform_edit_matrix($component) {
       '#states' => array(
           // Hide the settings when the cancel notify checkbox is disabled.
           'invisible' => array(
-              ':input[name="extra[remove_row_feature]"]' => array('checked' => FALSE),
+              ':input[name="extra[remove_row_feature]"]' => array('value'=>0),
           ),
       ),
   );
@@ -369,16 +370,22 @@ function _webform_matrix_component_get_type_option(&$form, &$form_state) {
  * Implements _webform_render_component().
  */
 function _webform_render_matrix($component, $value = NULL, $filter = TRUE) {
-
+  $node = isset($component['nid']) ? node_load($component['nid']) : NULL;
+  
   $element = array();
   $element['#weight'] = $component['weight'];
   $element['#webform_component'] = $component;
   $element['#component_value'] = $value;
+  $element['#title'] = $filter ? webform_filter_xss($component['name']) : $component['name'];
+  if(isset($component['extra']['description'])){
+    $element['#description'] = $filter ? webform_filter_descriptions($component['extra']['description'], $node) : $component['extra']['description'];
+  }
   if ($component['extra']['title_display'] != 0) {
     $element['value'] = array(
         '#markup' => "<label>" . _webform_filter_xss($component['name']) . "</label>",
     );
   };
+  $element['#translatable'] = array('title', 'description');
   return $element;
 }
 
@@ -435,12 +442,21 @@ function _webform_submit_matrix($component, $value) {
    
     
    $form_key = $component['form_key'];
+   
   if (isset($value['add_row_'.$form_key])) {
     unset($value['add_row_'.$form_key]);
   }
   if (isset($value['remove_row_'.$form_key])) {
     unset($value['remove_row_'.$form_key]);
   }
+  
+  $keys = array_keys( $value );
+    foreach ( $keys as $key ) {
+        if ( preg_match( '/remove_row_line_'.$form_key.'_.$/', $key ) ) {
+        unset($value[$key]);
+        }
+    }
+
   return serialize($value);
 }
 
