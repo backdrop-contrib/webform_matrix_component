@@ -21,6 +21,7 @@ function _webform_defaults_matrix() {
       'matrix_row' => '1',
       'title_display' => 0,
       'description' => '',
+      'description_above' => FALSE,
       'private' => FALSE,
     ),
   );

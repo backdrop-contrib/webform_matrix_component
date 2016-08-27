@@ -424,6 +424,7 @@ function theme_webform_matrix_table($variables) {
   $pid = $component['pid'];
   $id = "edit-$form_key-$pid";
   $matrix_col = $component['extra']['matrix_col'];
+  $above = !empty($element['#webform_component']['extra']['description_above']);
   $matrix_row = $element['#temp_max_row']; //$component['extra']['matrix_row'];
   //'remove_row_line' . $formkey."_".$prow
   $headers = $element['#headers'];
@@ -470,6 +471,10 @@ function theme_webform_matrix_table($variables) {
   $form_class = str_replace('_', '-', $form_key);
   $output = "<div class='form-item webform-component webform-component-matrix webform-component--$form_class webform-component-$form_class' id='$id'>";
   $caption = !empty($element['#matrix_header']) ? $element['#matrix_header'] : NULL;
+  
+  if($above){
+      $output .= !empty($element['#description']) ? '<div>' . $element['#description'] . "</div>" : "";
+  }
   $output .= theme('table', array('caption' => $caption,'header' => $headers, 'rows' => $rows, 'attributes' => array('id' => array("$id-table"))));
  
   // Render the 'add row' button.  Add row button id is in format add_row_formId.
@@ -478,7 +483,9 @@ function theme_webform_matrix_table($variables) {
   $output .= drupal_render_children($element, array($add_row_id));
   $output .= drupal_render_children($element, array($remove_row_id));
 
-  $output .= !empty($element['#description']) ? '<div>' . $element['#description'] . "</div>" : "";
+  if(!$above){
+    $output .= !empty($element['#description']) ? '<div>' . $element['#description'] . "</div>" : "";
+  }
   $output .= "</div>";
   return $output;
 }
