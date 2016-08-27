@@ -473,7 +473,7 @@ function theme_webform_matrix_table($variables) {
   $caption = !empty($element['#matrix_header']) ? $element['#matrix_header'] : NULL;
   
   if($above){
-      $output .= !empty($element['#description']) ? '<div>' . $element['#description'] . "</div>" : "";
+      $caption .= !empty($element['#description']) ? '<div>' . $element['#description'] . "</div>" : "";
   }
   $output .= theme('table', array('caption' => $caption,'header' => $headers, 'rows' => $rows, 'attributes' => array('id' => array("$id-table"))));
  
