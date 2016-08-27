@@ -329,7 +329,7 @@ function webform_matrix_component_form_alter(&$form, &$form_state, $form_id) {
                 $element['remove_row_line_' . $formkey."_".$prow] = array(
                   '#type' => 'submit',
                   '#name' => 'remove_row_line' . $formkey."_".$prow,
-                  '#value' => isset($component['extra']['remove_row_button_text']) ? $component['extra']['remove_row_button_text'] : t('Remove a row'),
+                  '#value' => isset($component['extra']['remove_row_button_text']) ? t($component['extra']['remove_row_button_text']) : t('Remove a row'),
                   '#submit' => array('_webform_matrix_component_get_remove_row_line_submit'),
                   '#limit_validation_errors' => array(),
                   '#ajax' => array(
@@ -347,7 +347,7 @@ function webform_matrix_component_form_alter(&$form, &$form_state, $form_id) {
           $element['add_row_' . $formkey] = array(
               '#type' => 'submit',
               '#name' => 'add_row_' . $formkey,
-              '#value' => isset($component['extra']['add_row_button_text']) ? $component['extra']['add_row_button_text'] : t('Add a row'),
+              '#value' => isset($component['extra']['add_row_button_text']) ? t($component['extra']['add_row_button_text']) : t('Add a row'),
               '#submit' => array('_webform_matrix_component_get_add_row_submit'),
               '#limit_validation_errors' => array(),
               '#ajax' => array(
@@ -361,7 +361,7 @@ function webform_matrix_component_form_alter(&$form, &$form_state, $form_id) {
           $element['remove_row_' . $formkey] = array(
               '#type' => 'submit',
               '#name' => 'remove_row_' . $formkey,
-              '#value' => isset($component['extra']['remove_row_button_text']) ? $component['extra']['remove_row_button_text'] : t('Remove a row'),
+              '#value' => isset($component['extra']['remove_row_button_text']) ? t($component['extra']['remove_row_button_text']) : t('Remove a row'),
               '#submit' => array('_webform_matrix_component_get_remove_row_submit'),
               '#limit_validation_errors' => array(),
               '#ajax' => array(
