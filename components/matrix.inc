@@ -109,6 +109,20 @@ function _webform_edit_matrix($component) {
       '#required' => 1,
       '#states' => array(
           // Hide the settings when the cancel notify checkbox is disabled.
+          'visible' => array(
+              ':input[name="extra[remove_row_feature]"]' => array('value'=>2),
+          ),
+      ),
+  );
+  
+  $form['extra']['remove_row_header_text'] = array(
+      '#type' => 'textfield',
+      '#title' => t('Remove row header text'),
+      '#default_value' => isset($component['extra']['remove_row_header_text']) ? $component['extra']['remove_row_header_text'] : t('Remove action'),
+      '#weight' => 2,
+      '#parents' => array('extra', 'remove_row_header_text'),
+      '#states' => array(
+          // Hide the settings when the cancel notify checkbox is disabled.
           'invisible' => array(
               ':input[name="extra[remove_row_feature]"]' => array('value'=>0),
           ),

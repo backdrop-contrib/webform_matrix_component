@@ -190,7 +190,7 @@ function webform_matrix_component_form_alter(&$form, &$form_state, $form_id) {
                 $title = isset($elevalue['title']) ? $elevalue['title'] : $elekey;
                 $title = _webform_filter_xss($title);
 
-                $headers[] = $title;
+                
                 $title_display = "invisible";
 
                 // Only first row is manadatory.
@@ -204,7 +204,13 @@ function webform_matrix_component_form_alter(&$form, &$form_state, $form_id) {
                     $required = $elevalue['mandatory'] ? TRUE : FALSE;
                   }
                 }
-
+                
+                $htitle = $title;
+                if($component['mandatory'] || $elevalue['mandatory']){
+                    $htitle.=theme_form_required_marker($title);
+                }
+                $headers[] = $htitle;
+                
                 switch ($eletype) {
 
                   case 'textfield':
@@ -465,7 +471,8 @@ function theme_webform_matrix_table($variables) {
   }
 
   if($is_remove_line){
-      $headers[] = 'Remove action';
+      //$headers[] = 'Remove action';
+      $headers[] = isset($component['extra']['remove_row_header_text']) ? t($component['extra']['remove_row_header_text']) : t('Remove action');
   }
   $rows[] = array(array('data' => drupal_render($element['add_row']), 'colspan' => $matrix_col));
   $form_class = str_replace('_', '-', $form_key);
