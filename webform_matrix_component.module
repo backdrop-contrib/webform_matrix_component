@@ -262,7 +262,7 @@ function webform_matrix_component_form_alter(&$form, &$form_state, $form_id) {
                         }
                         else {
                           $element[$prow][$i]['#type'] = 'radios';
-                          if ($editvalue[$prow][$i]) {
+                          if (isset($editvalue[$prow][$i]) && $editvalue[$prow][$i]) {
                             $element[$prow][$i]['#default_value'] = $editvalue[$prow][$i];
                           }
                         }
