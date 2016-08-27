@@ -293,6 +293,9 @@ function webform_matrix_component_form_alter(&$form, &$form_state, $form_id) {
                         //'#theme_wrappers' => array('webform_element'),
                         '#element_validate' => array('webform_validate_date'),
                         '#datepicker' => $datepicker,
+                        '#reference_timestamp' => NULL,
+                        '#exclude' => array(),
+                        '#webform_component' => array('cid' => $cid, 'type' => 'date'),
                     );
                     break;
 
@@ -451,7 +454,7 @@ function theme_webform_matrix_table($variables) {
         // use the following line instead of the foreach loop
         // $element[$i][$j]['#options'][''] = t($element[$i][$j]['#options']['']);
         foreach ($element[$i][$j]['#options'] as $key => $option) {
-          $element[$i][$j]['#options'][$key] = t('@option', array('@option' => $option));
+          $element[$i][$j]['#options'][$key] = t('!option', array('!option' => $option));
         }
       }
       // If element type is label then extract the correct label for the current row.
