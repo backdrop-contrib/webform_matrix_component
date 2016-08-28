@@ -4,6 +4,8 @@ core = 7.x
 package = Webform
 dependencies[] = webform
 
+files[] = tests/webform_matrix_component.test
+
 ; Information added by drupal.org packaging script on 2013-10-03
 version = "7.x-3.0"
 core = "7.x"
