@@ -426,7 +426,8 @@ function _webform_matrix_component_fieldset_parents($cid, $submitted, &$parents 
  * Theme for webform matrix.
  */
 function theme_webform_matrix_table($variables) {
-  $element = $variables['element'];
+				
+		$element = $variables['element'];
  
   $component = $element['#webform_component'];
   $form_key = $component['form_key'];
