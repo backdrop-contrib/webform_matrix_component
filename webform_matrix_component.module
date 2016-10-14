@@ -223,6 +223,8 @@ function webform_matrix_component_form_alter(&$form, &$form_state, $form_id) {
                       '#default_value' => isset($editvalue[$prow][$i]) ? $editvalue[$prow][$i] : $elevalue['default_value'],
                       '#required' => $required,
                       '#title_display' => $title_display,
+                      '#validated' => TRUE,
+                      '#webform_validated' => FALSE,
                     );
 
                     break;
@@ -272,6 +274,8 @@ function webform_matrix_component_form_alter(&$form, &$form_state, $form_id) {
                             $element[$prow][$i]['#default_value'] = $editvalue[$prow][$i];
                           }
                         }
+                        $element[$prow][$i]['#validated'] = TRUE;
+                        $element[$prow][$i]['#webform_validated'] = FALSE;
                         break;
                     }
                     break;
@@ -340,6 +344,8 @@ function webform_matrix_component_form_alter(&$form, &$form_state, $form_id) {
                        '#default_value' => isset($editvalue[$prow][$i]) ? $editvalue[$prow][$i] : "",
                        '#title' => check_plain($title),
                        '#required' => $required,
+                       '#validated' => TRUE,
+                       '#webform_validated' => FALSE,
                     );
                     
                     break;

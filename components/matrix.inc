@@ -488,13 +488,14 @@ function _webform_submit_matrix($component, $value) {
         unset($value['remove_row_' . $form_key]);
     }
 
-    $keys = array_keys($value);
-    foreach ($keys as $key) {
-        if (preg_match('/remove_row_line_' . $form_key . '_.$/', $key)) {
-            unset($value[$key]);
+    if (is_array($value)) {
+        $keys = array_keys($value);
+        foreach ($keys as $key) {
+            if (preg_match('/remove_row_line_' . $form_key . '_.$/', $key)) {
+                unset($value[$key]);
+            }
         }
     }
-
     return serialize($value);
 }
 
