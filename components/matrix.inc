@@ -175,6 +175,7 @@ function _webform_matrix_component_get_column_form($form, $form_state, $componen
         'select' => t('Select Options'),
         'label' => t('Label'),
         'date' => t('Date'),
+        'textarea' => t('Textarea'),
     );
 
     for ($i = 1; $i <= $matrix_col; $i++) {
@@ -362,6 +363,29 @@ function _webform_matrix_component_get_column_form($form, $form_state, $componen
                     '#default_value' => !empty($default_date) ? $default_date : '',
                     '#size' => 15,
                     '#parents' => array('extra', 'element', $element_id, 'default_date'),
+                );
+                break;
+            case 'textarea':
+                $rows = !empty($elementvalue['rows']) ? $elementvalue['rows'] : 1;
+                $form['extra']['element'][$element_id]['rows'] = array(
+                    '#type' => 'textfield',
+                    '#title' => t('Rows'),
+                    '#default_value' => $rows,
+                    '#size' => 15,
+                    '#required' => TRUE,
+                    '#parents' => array('extra', 'element', $element_id, 'rows'),
+                    '#element_validate' => array('_webform_matrix_component_validate_number'),
+                );
+
+                $cols = !empty($elementvalue['cols']) ? $elementvalue['cols'] : 60;
+                $form['extra']['element'][$element_id]['cols'] = array(
+                    '#type' => 'textfield',
+                    '#title' => t('Cols'),
+                    '#default_value' => $cols,
+                    '#size' => 15,
+                    '#required' => TRUE,
+                    '#parents' => array('extra', 'element', $element_id, 'cols'),
+                    '#element_validate' => array('_webform_matrix_component_validate_number'),
                 );
                 break;
         }
@@ -788,6 +812,14 @@ function _webform_display_array($sub_elements, $value_array, &$headers = array()
         } elseif ($sub_element['type'] == 'label') {
             foreach ($value_array as $key => $value_row) {
                 $display_array[$key][$col] = $sub_element['label_name'][$key];
+            }
+        } elseif ($sub_element['type'] == 'textarea') {
+            foreach ($value_array as $key => $value_row) {
+                if (!empty($value_row[$col])) {
+                    $display_array[$key][$col] = check_plain($value_row[$col]);
+                } else {
+                    $display_array[$key][$col] = "";
+                }
             }
         }
         $col++;

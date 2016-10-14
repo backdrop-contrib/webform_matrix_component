@@ -329,6 +329,20 @@ function webform_matrix_component_form_alter(&$form, &$form_state, $form_id) {
                       }
                     }
                     break;
+                case 'textarea':
+                    $element[$prow][$i] = array(
+                       '#type' => 'textarea',
+                       '#title' => check_plain($title),
+                       '#rows' => !empty($elevalue['rows']) ? $elevalue['rows'] : 1,
+                       '#cols' => !empty($elevalue['cols']) ? $elevalue['cols'] : 15,
+  		       '#resizable' => TRUE,
+                       '#title_display' => $title_display,
+                       '#default_value' => isset($editvalue[$prow][$i]) ? $editvalue[$prow][$i] : "",
+                       '#title' => check_plain($title),
+                       '#required' => $required,
+                    );
+                    
+                    break;
                 }
                 drupal_alter('webform_render_matrix', $component, $elevalue, $element[$prow][$i]);
               }
