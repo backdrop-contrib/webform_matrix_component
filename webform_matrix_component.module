@@ -500,7 +500,12 @@ function theme_webform_matrix_table($variables) {
   }
   $rows[] = array(array('data' => drupal_render($element['add_row']), 'colspan' => $matrix_col));
   $form_class = str_replace('_', '-', $form_key);
-  $output = "<div class='form-item webform-component webform-component-matrix webform-component--$form_class webform-component-$form_class' id='$id'>";
+  
+// Convert the parents array into a string, excluding the "submitted" wrapper.
+  $nested_level = $element['#parents'][0] == 'submitted' ? 1 : 0;
+  $parents = str_replace('_', '-', implode('--', array_slice($element['#parents'], $nested_level)));
+  
+  $output = "<div class='form-item webform-component webform-component-matrix webform-component--$form_class webform-component--$parents' id='$id'>";
   $caption = !empty($element['#matrix_header']) ? $element['#matrix_header'] : NULL;
   
   if($above){
@@ -518,6 +523,7 @@ function theme_webform_matrix_table($variables) {
     $output .= !empty($element['#description']) ? '<div>' . $element['#description'] . "</div>" : "";
   }
   $output .= "</div>";
+  
   return $output;
 }
 
