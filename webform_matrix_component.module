@@ -175,11 +175,6 @@ function webform_matrix_component_form_alter(&$form, &$form_state, $form_id) {
           }
 
           for ($prow = 1; $prow <= $form_state[$formkey]['temp_matrix_rows']; $prow++) {
-              
-            if(isset($form_state[$formkey]['remove_line'])){
-                if($form_state[$formkey]['remove_line'] == $prow)
-                    continue;
-            }  
             if (isset($component['extra']['element'])) {
 
               $headers = array();
@@ -311,7 +306,7 @@ function webform_matrix_component_form_alter(&$form, &$form_state, $form_id) {
                         '#title' => check_plain($title),
                         '#markup' => webform_filter_xss($label_element),
                         '#attributes' => array('class' => array('form-item')),
-                        '#default_value' => $editvalue[$prow][$i],
+                        '#default_value' => isset($editvalue[$prow][$i])?$editvalue[$prow][$i]:"",
                         '#title_display' => $title_display,
                       );
                       $element[$prow][$i]['#webform_matrix_component_labels'] = TRUE;
@@ -597,7 +592,22 @@ function _webform_matrix_component_get_remove_row_line_submit($form, &$form_stat
 
     $size_array  = count($remove_line_array); 
     $remove_line =  $remove_line_array[$size_array-1];
-    $form_state[$form_key]['remove_line'] = $remove_line;
+    $rowKeys = array_values(array_filter(array_keys($form['submitted'][$form_key]), 'is_int'));
+    $shifted = false;
+    foreach ($rowKeys as $key) {
+      if ($shifted) {
+        $form_state["input"]["submitted"][$form_key][$key - 1] = $form_state["input"]["submitted"][$form_key][$key];
+        $form['submitted'][$form_key][$key - 1] = $form['submitted'][$form_key][$key];
+        unset($form['submitted'][$form_key][$key]);
+        unset($form_state["input"]["submitted"][$form_key][$key]);
+      } else if ($key == $remove_line) {
+        $shifted = true;
+        unset($form['submitted'][$form_key][$key]);
+        unset($form_state["input"]["submitted"][$form_key][$key]);
+      }
+    }
+
+    $form_state[$form_key]['temp_matrix_rows']--;
 
     $form_state['rebuild'] = TRUE;
   }else{
