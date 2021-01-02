@@ -426,17 +426,19 @@ function webform_matrix_component_form_alter(&$form, &$form_state, $form_id) {
 function _webform_matrix_component_fieldset_parents($cid, $submitted, &$parents = array(), &$found = FALSE) {
 
   foreach (element_children($submitted) as $component_name) {
-    if ($submitted[$component_name]['#webform_component']['type'] == 'fieldset') {
-      // Check if the matrix is a direct child of this fieldset:
-      $parents[] = $component_name;
-      _webform_matrix_component_fieldset_parents($cid, $submitted[$component_name], $parents, $found);
-      if ($found) {
+    if (isset($submitted[$component_name]['#webform_component']['type'])) {
+      if ($submitted[$component_name]['#webform_component']['type'] == 'fieldset') {
+        // Check if the matrix is a direct child of this fieldset:
+        $parents[] = $component_name;
+        _webform_matrix_component_fieldset_parents($cid, $submitted[$component_name], $parents, $found);
+        if ($found) {
+          return $parents;
+        }
+      }
+      elseif ($submitted[$component_name]['#webform_component']['cid'] == $cid) {
+        $found = TRUE;
         return $parents;
       }
-    }
-    elseif ($submitted[$component_name]['#webform_component']['cid'] == $cid) {
-      $found = TRUE;
-      return $parents;
     }
   }
   array_pop($parents);
