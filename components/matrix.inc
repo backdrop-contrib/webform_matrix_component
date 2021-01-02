@@ -311,6 +311,23 @@ function _webform_matrix_component_get_column_form($form, $form_state, $componen
                     '#parents' => array('extra', 'element', $element_id, 'default_value'),
                     '#description' => t("Enter key"),
                 );
+
+                // Hide the value from the key|value pair when the checkbox is displayed.
+                $form['extra']['element'][$element_id]['hide_title'] = array(
+                    '#type' => 'checkbox',
+                    '#title' => t('Hide label'),
+                    '#description' => t('Hide the label for the form, e.g. only show radio, checkbox.'),
+                    '#size' => 15,
+                    '#default_value' => empty($elementvalue['hide_title']) ? FALSE : $elementvalue['hide_title'],
+                    '#parents' => array('extra', 'element', $element_id, 'hide_title'),
+                    '#return_value' => 1,
+                    '#states' => array(
+                        'visible' => array(
+                            ':input[name="extra[element][' . $element_id . '][select_type]"]' => array('value' => 'radio'),
+                        ),
+                    ),
+                );
+                drupal_set_message(var_export($form['extra']['element'][$element_id]['hide_title']["#states"]["visible"], true));
                 break;
 
             case 'label':

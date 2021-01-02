@@ -228,6 +228,10 @@ function webform_matrix_component_form_alter(&$form, &$form_state, $form_id) {
                     //Choose Select Type Radio/ListBox/Checkbox
                     $select_type = isset($elevalue['select_type']) ? $elevalue['select_type'] : 'list';
                     $is_multiple = isset($elevalue['multiple']) ? $elevalue['multiple'] : 0;
+
+                    // Hide the "value" when rendering the form component.
+                    $hide_title = isset($elevalue['hide_title']) ? $elevalue['hide_title'] : 0;
+
                     // Options
                     $options = $elevalue['option'];
                     $option_array = array();
@@ -258,6 +262,7 @@ function webform_matrix_component_form_alter(&$form, &$form_state, $form_id) {
                             '#options' => $option_array,
                             '#required' => $required,
                             '#title_display' => $title_display,
+                            '#child_title_display' => $hide_title ? 'invisible' : 'after',
                         );
                         if ($is_multiple) {
                           $element[$prow][$i]['#type'] = 'checkboxes';
@@ -463,6 +468,14 @@ function theme_webform_matrix_table($variables) {
   for ($i = 1; $i <= $matrix_row; $i++) {
     $cols = array();
     for ($j = 1; $j <= $matrix_col; $j++) {
+
+      // Show, or hide the value for the form element (label for checkboxes).
+      foreach (element_children($element[$i][$j]) as $key) {
+        if (isset($element[$i][$j]['#child_title_display'])) {
+          $element[$i][$j][$key]['#title_display'] = $element[$i][$j]['#child_title_display'];
+        }
+      }
+
       // Make select options translatable
       // this includes the default "Select" label
       if (isset($element[$i][$j]['#type']) && $element[$i][$j]['#type'] === 'select') {
