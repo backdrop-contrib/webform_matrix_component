@@ -1,0 +1,31 @@
+<?php
+/**
+ * @file
+ * Install, update and uninstall functions for the webform_matrix_component module.
+ *
+ */
+
+
+/**
+ * Migrate webform_matrix_component variables to config.
+ */
+function webform_matrix_component_update_1000() {
+  $config = config('webform_matrix_component.settings');
+  $config->set('webform_matrix_component_webform_matrix_rows', update_variable_get('webform_matrix_component_webform_matrix_rows', '20'));
+  $config->set('webform_matrix_component_webform_matrix_cols', update_variable_get('webform_matrix_component_webform_matrix_cols', '10'));
+  $config->set('"webform_matrix_component_webform_matrix_title_required"', update_variable_get('"webform_matrix_component_webform_matrix_title_required"', '1'));
+  $config->set('webform_matrix_component_webform_matrix_title_required', update_variable_get('webform_matrix_component_webform_matrix_title_required', '1'));
+  $config->save();
+
+  update_variable_del('webform_matrix_component_webform_matrix_rows');
+  update_variable_del('webform_matrix_component_webform_matrix_cols');
+  update_variable_del('"webform_matrix_component_webform_matrix_title_required"');
+  update_variable_del('webform_matrix_component_webform_matrix_title_required');
+}
+
+/**
+ * Implements hook_install().
+ */
+function webform_matrix_component_install() {
+  // Dynamically generated variable data was detected.
+}

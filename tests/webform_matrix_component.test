@@ -8,7 +8,7 @@
 /**
  * Tests for webform matrix component.
  */
-class WebformMatrixTestCase extends DrupalWebTestCase {
+class WebformMatrixTestCase extends BackdropWebTestCase {
   /**
    * Implements getInfo().
    */
@@ -27,13 +27,15 @@ class WebformMatrixTestCase extends DrupalWebTestCase {
     parent::setUp(array('webform_matrix_component'));
 
     // Create webform node
+
     $settings = array(
       'title' => 'Matrix node',
       'type' => 'webform',
     );
-    $node = $this->drupalCreateNode($settings);
+    $node = $this->backdropCreateNode($settings);
 
     // Add a matrix component.
+
     $matrix = array(
       'nid' => $node->nid,
       'cid' => 1,
@@ -94,6 +96,7 @@ class WebformMatrixTestCase extends DrupalWebTestCase {
    */
   function tearDown() {
     // Delete webform nodes.
+
     $result = db_select('node')
         ->fields('node')
         ->condition('type', 'webform')
@@ -109,21 +112,26 @@ class WebformMatrixTestCase extends DrupalWebTestCase {
    * Test output matrix fields.
    */
   function testWebformOutputMatrixFields() {
-    $node = $this->drupalGetNodeByTitle('Matrix node');
+    $node = $this->backdropGetNodeByTitle('Matrix node');
     // Get the node page
-    $this->drupalGet('node/' . $node->nid);
+
+    $this->backdropGet('node/' . $node->nid);
 
     for ($row = 1; $row <= 3; $row++) {
       // Assert select field with default
+
       $this->assertFieldById('edit-submitted-matrix-' . $row . '-1', 'key2');
       // Assert textfield
+
       $this->assertFieldById('edit-submitted-matrix-' . $row . '-2');
     }
 
     // Add a row button
+
     $this->assertFieldById('edit-submitted-matrix-add-row-matrix', 'Add a row');
 
     // Assert some texts are present
+
     $this->assertText(t('Matrix'));
     $this->assertText(t('Select title'));
     $this->assertText(t('Textfield title'));

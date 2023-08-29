@@ -1,0 +1,6 @@
+[WebformMatrixTestCase]
+name = Webform matrix component
+description = Tests webform matrix component.
+group = Webform
+file = tests/webform_matrix_component.test
+

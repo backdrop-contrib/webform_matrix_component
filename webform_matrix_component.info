@@ -1,7 +1,7 @@
 name =Webform Matrix Component
 description = Matrix Component for webform
-core = 7.x
+backdrop = 1.x
+type = module
 package = Webform
 dependencies[] = webform
-
-files[] = tests/webform_matrix_component.test
+version = 0.1-dev
