@@ -132,7 +132,6 @@ function _webform_edit_matrix($component) {
     ),
   );
 
-
   return $form;
 }
 
@@ -142,7 +141,6 @@ function _webform_edit_matrix($component) {
  */
 function _webform_matrix_component_get_column_form($form, $form_state, $component) {
   $config = config('webform_matrix_component.settings');
-
 
   $max_cols = $config->get('webform_matrix_component_webform_matrix_cols');
 
@@ -285,12 +283,11 @@ function _webform_matrix_component_get_column_form($form, $form_state, $componen
           '#description' => t('<strong>Key-value pairs MUST be specified as "safe_key|Some readable option"</strong>. Use of only alphanumeric characters and underscores is recommended in keys.'),
         );
 
-
         $select_type = @$elementvalue['select_type'];
         $form['extra']['element'][$element_id]['select_type'] = array(
           '#type' => 'select',
           '#title' => t('Select Type'),
-          '#default_value' => empty($select_type)?array('list') : $select_type,
+          '#default_value' => empty($select_type) ? array('list') : $select_type,
           '#options' => array(
             'list' => 'Listbox',
             'radio' => 'Radio',
@@ -321,13 +318,12 @@ function _webform_matrix_component_get_column_form($form, $form_state, $componen
         );
 
         // Hide the value from the key|value pair when the checkbox is displayed.
-
         $form['extra']['element'][$element_id]['hide_title'] = array(
           '#type' => 'checkbox',
           '#title' => t('Hide label'),
           '#description' => t('Hide the label for the form, e.g. only show radio, checkbox.'),
           '#size' => 15,
-          '#default_value' => empty($elementvalue['hide_title'])?FALSE : $elementvalue['hide_title'],
+          '#default_value' => empty($elementvalue['hide_title']) ? FALSE : $elementvalue['hide_title'],
           '#parents' => array('extra', 'element', $element_id, 'hide_title'),
           '#return_value' => 1,
           '#states' => array(
@@ -336,7 +332,7 @@ function _webform_matrix_component_get_column_form($form, $form_state, $componen
             ),
           ),
         );
-        backdrop_set_message(var_export($form['extra']['element'][$element_id]['hide_title']["#states"]["visible"], true));
+        backdrop_set_message(var_export($form['extra']['element'][$element_id]['hide_title']["#states"]["visible"], TRUE));
         break;
 
       case 'label':
@@ -434,15 +430,15 @@ function _webform_matrix_component_get_type_option($form, $form_state) {
  * Implements _webform_render_component().
  */
 function _webform_render_matrix($component, $value = NULL, $filter = TRUE) {
-  $node = isset($component['nid'])?node_load($component['nid']) : NULL;
+  $node = isset($component['nid']) ? node_load($component['nid']) : NULL;
 
   $element = array();
   $element['#weight'] = $component['weight'];
   $element['#webform_component'] = $component;
   $element['#component_value'] = $value;
-  $element['#title'] = $filter?webform_filter_xss($component['name']) : $component['name'];
+  $element['#title'] = $filter ? webform_filter_xss($component['name']) : $component['name'];
   if (isset($component['extra']['description'])) {
-    $element['#description'] = $filter?webform_filter_descriptions($component['extra']['description'], $node) : $component['extra']['description'];
+    $element['#description'] = $filter ? webform_filter_descriptions($component['extra']['description'], $node) : $component['extra']['description'];
   }
   if ($component['extra']['title_display'] != 0) {
     $element['value'] = array(
@@ -458,7 +454,6 @@ function _webform_render_matrix($component, $value = NULL, $filter = TRUE) {
  */
 function theme_webform_date_matrix($variables) {
   // TODO: Should this theme webform_date_matrix be declared in hook_theme()?
-
   backdrop_add_js(backdrop_get_path('module', 'webform') . '/js/webform.js');
 
   $element = $variables['element'];
@@ -468,7 +463,6 @@ function theme_webform_date_matrix($variables) {
   $element['day']['#attributes']['class'] = array('day');
 
   // Add error classes to all items within the element.
-
   if (form_get_error($element)) {
     $element['year']['#attributes']['class'][] = 'error';
     $element['month']['#attributes']['class'][] = 'error';
@@ -478,7 +472,6 @@ function theme_webform_date_matrix($variables) {
   $class = array('webform-container-inline');
 
   // Add the JavaScript calendar if available (provided by Date module package).
-
   if (!empty($element['#datepicker'])) {
     $class[] = 'webform-datepicker';
     $calendar_class = array('webform-calendar');
@@ -507,7 +500,6 @@ function theme_webform_date_matrix($variables) {
  * Implements _webform_submit_component().
  */
 function _webform_submit_matrix($component, $value) {
-
 
   $form_key = $component['form_key'];
 
@@ -546,7 +538,6 @@ function _webform_matrix_component_edit_select($element, $form_state) {
     if (preg_match('/^\<([^>]*)\>$/', $line, $matches)) {
       $group = $matches[1];
       // No need to store group names.
-
       $key = NULL;
     }
     elseif (preg_match('/^([^|]*)\|(.*)$/', $line, $matches)) {
@@ -587,7 +578,6 @@ function _webform_matrix_component_edit_select($element, $form_state) {
  */
 function _webform_matrix_component_edit_date($element, $form_state) {
   // Check if the user filled the required fields.
-
   foreach (array('day', 'month', 'year') as $field_type) {
     if (!is_numeric($element[$field_type]['#value']) && $element['#required']) {
       form_error($element, t('@name field is required.', array('@name' => $element['#title'])));
@@ -602,7 +592,7 @@ function _webform_matrix_component_edit_date($element, $form_state) {
 function _webform_display_matrix($component, $value, $format = 'html') {
 
   $headers = array();
-  $value_array = isset($value[0])?unserialize($value[0]) : '';
+  $value_array = isset($value[0]) ? unserialize($value[0]) : '';
   if (empty($value_array)) {
     return array();
   }
@@ -619,7 +609,7 @@ function _webform_display_matrix($component, $value, $format = 'html') {
     '#title' => $component['name'],
     '#weight' => $component['weight'],
     '#theme' => 'webform_display_matrix',
-    '#theme_wrappers' => $format == 'html'?array('webform_element') : array('webform_element_text'),
+    '#theme_wrappers' => $format == 'html' ? array('webform_element') : array('webform_element_text'),
     '#format' => $format,
     '#value' => $matrix_value,
     '#translatable' => array('title'),
@@ -630,12 +620,8 @@ function _webform_display_matrix($component, $value, $format = 'html') {
  * Format the text output for this component.
  */
 function theme_webform_display_matrix($variables) {
-  // TODO: Should this theme webform_display_matrix be declared in hook_theme()?
-
   $matrix_value = $variables['element']['#value'];
-  //$output = theme('table', array('header' => $matrix_value['headers'], 'rows' => $matrix_value['rows']));
-
-
+  // $output = theme('table', array('header' => $matrix_value['headers'], 'rows' => $matrix_value['rows']));
   if ($variables['element']['#format'] == 'html') {
     $output = theme('table', array('header' => $matrix_value['headers'], 'rows' => $matrix_value['rows']));
   }
@@ -646,8 +632,7 @@ function theme_webform_display_matrix($variables) {
     }
   }
 
-//    $output = theme('table', array('header' => $matrix_value['headers'], 'rows' => $matrix_value['rows']));
-
+  // $output = theme('table', array('header' => $matrix_value['headers'], 'rows' => $matrix_value['rows']));
   return $output;
 }
 
@@ -678,7 +663,6 @@ function _webform_analysis_matrix($component, $sids = array()) {
   }
 
   // Display stats.
-
   $nonblanks = count($matrixs);
   $rows[0] = array(t('Left Blank'), ($submissions - $nonblanks));
   $rows[1] = array(t('User entered value'), $nonblanks);
@@ -738,8 +722,7 @@ function _webform_csv_data_matrix($component, $export_options, $value) {
     }
     $sub_elements = $component['extra']['element'];
 
-    //Return managable display array
-
+    // Return managable display array.
     $display_array = _webform_display_array($sub_elements, $value_array);
 
     $reverse_array = _webform_matrix_component_array_reverse($display_array);
@@ -758,7 +741,7 @@ function _webform_csv_data_matrix($component, $export_options, $value) {
  * Unseriaze matrix components values.
  */
 function _webform_matrix_component_array($value) {
-  return ($value != '')?unserialize($value) : "";
+  return ($value != '') ? unserialize($value) : "";
 }
 
 /**
@@ -776,7 +759,7 @@ function _webform_matrix_component_select_option_from_text($options) {
       $option_array[$key] = $value;
     }
   }
-  $option_array = (count($option_array) == 0)?array(0 => 'None') : $option_array;
+  $option_array = (count($option_array) == 0) ? array(0 => 'None') : $option_array;
   return $option_array;
 }
 
@@ -795,11 +778,13 @@ function _webform_matrix_component_array_reverse($array) {
 
 /**
  * This is return display array
- * @param array $sub_elements matrix node compoenent
- * @param array $value_array matrix submission result
+ * @param array $sub_elements
+ *   matrix node component.
+ * @param array $value_array
+ *   matrix submission result.
  * @return $display_array display result
  */
-function _webform_display_array($sub_elements, $value_array, $headers = array()) {
+function _webform_display_array($sub_elements, $value_array, &$headers = array()) {
 
   $col = 1;
 
@@ -822,8 +807,7 @@ function _webform_display_array($sub_elements, $value_array, $headers = array())
 
       foreach ($value_array as $key => $value_row) {
         if (isset($value_row[$col])) {
-          // Check for multiple
-
+          // Check for multiple.
           $is_multiple = @$sub_element['multiple'];
 
           if (is_array($value_row[$col])) {
@@ -841,8 +825,7 @@ function _webform_display_array($sub_elements, $value_array, $headers = array())
             }
           }
           else {
-            // Previous functionality
-
+            // Previous functionality.
             if (array_key_exists($value_row[$col], $option_array)) {
               $display_array[$key][$col] = $option_array[$value_row[$col]];
             }
