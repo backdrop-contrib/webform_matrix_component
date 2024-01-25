@@ -25,3 +25,25 @@ Installation
    "Content authoring" -> "Webform settings"
 
 4. Now matrix component is show in component list.
+
+Current Maintainers 
+-------------------
+
+- [Eric Aitala](https://github.com/aitala).
+
+- Seeking additional maintainers.
+
+Credits 
+-------
+
+- Ported to Backdrop CMS by Eric Aitala (https://github.com/aitala).
+- Assisted by Laryn Kragt Bakker (https://github.com/laryn).
+- Mainained for Drupal by Chetan Singhal (https://www.drupal.org/user/1493572)
+- Inital development sponsored by Penn State
+
+License 
+-------
+
+This project is GPL v2 software.
+See the LICENSE.txt file in this directory for complete text.
+
